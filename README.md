@@ -104,7 +104,7 @@ Governance backend mendukung save draft, submit approval, approve/reject, lock J
 File `index.html` saat ini diarahkan ke backend Express MariaDB:
 
 ```text
-http://localhost:3000/api
+https://org-jd-portal-api-production.up.railway.app/api
 ```
 
 Jalankan backend Express di folder `C:\xampp\htdocs\strukur organisasi API`, lalu jalankan frontend ini di port `5173`. Login admin memakai:
@@ -116,7 +116,7 @@ admin / admin12345
 Jika URL backend berubah, set di browser console:
 
 ```js
-localStorage.setItem('orgStructureJD.v3.apiBaseUrl', 'https://domain-backend-anda')
+localStorage.setItem('orgStructureJD.v3.apiBaseUrl', 'https://org-jd-portal-api-production.up.railway.app')
 ```
 
 ## Testing

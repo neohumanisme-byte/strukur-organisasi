@@ -1,0 +1,1520 @@
+﻿<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Org Structure & Job Description Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind = {
+      config: {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'Arial', 'sans-serif'] },
+            colors: {
+              corporate: {
+                navy: '#0F172A', navy2: '#1E293B', slate: '#334155', gold: '#C89B3C', teal: '#0F766E', soft: '#F8FAFC'
+              }
+            },
+            boxShadow: { luxury: '0 24px 60px rgba(15,23,42,.14)', card: '0 14px 35px rgba(15,23,42,.08)' }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { color-scheme: light; }
+    .tree-branch { position: relative; padding-left: 1.25rem; margin-left: .9rem; border-left: 1px dashed rgba(51,65,85,.23); }
+    .tree-node-wrap { position: relative; }
+    .tree-node-wrap::before { content: ""; position: absolute; top: 1.85rem; left: -1.25rem; width: 1.08rem; border-top: 1px dashed rgba(51,65,85,.23); }
+    .custom-scrollbar::-webkit-scrollbar { width: 10px; height: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; border-radius: 999px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; border: 2px solid #F1F5F9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    .fade-in { animation: fadeIn .18s ease-out both; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: translateY(0); } }
+    #printArea { display: none; }
+    @media print {
+      @page { size: A4; margin: 14mm; }
+      body { background: #fff !important; }
+      body * { visibility: hidden !important; }
+      #printArea, #printArea * { visibility: visible !important; }
+      #printArea { display:block !important; position:absolute; inset:0; width:100%; background:#fff; color:#111827; font-family: Inter, Arial, sans-serif; }
+      .print-section { break-inside: avoid; page-break-inside: avoid; }
+      .no-print { display:none !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 text-slate-800 font-sans antialiased">
+  <a href="#mainContent" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[90] focus:rounded-xl focus:bg-white focus:px-4 focus:py-3 focus:text-sm focus:font-bold focus:text-corporate-navy focus:shadow-card">Lewati ke konten utama</a>
+
+  <header class="no-print sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+      <div class="flex items-start gap-3">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-corporate-navy text-white shadow-card" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4"/><path d="M6 11h12"/><path d="M6 11v7"/><path d="M18 11v7"/><path d="M12 7v4"/><rect x="9" y="18" width="6" height="3" rx="1"/><rect x="3" y="18" width="6" height="3" rx="1"/><rect x="15" y="18" width="6" height="3" rx="1"/></svg>
+        </div>
+        <div>
+          <p class="text-xs font-extrabold uppercase tracking-[.22em] text-corporate-gold">Organization Portal</p>
+          <h1 class="mt-1 text-xl font-extrabold tracking-tight text-corporate-navy sm:text-2xl">Struktur Organisasi & Job Description</h1>
+          <p class="mt-1 max-w-3xl text-sm leading-6 text-slate-600">Front-end MVP untuk visualisasi struktur, document control JD, position management, mutasi/promosi sederhana, import/export JSON, dan print-to-PDF.</p>
+        </div>
+      </div>
+      <div class="flex flex-col gap-3 xl:flex-row xl:items-center">
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-1 shadow-sm" role="group" aria-label="Pilih mode akses">
+          <button id="employeeModeBtn" type="button" class="rounded-xl px-4 py-2 text-sm font-bold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-corporate-teal focus:ring-offset-2">Mode Karyawan</button>
+          <button id="adminModeBtn" type="button" class="rounded-xl px-4 py-2 text-sm font-bold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-corporate-teal focus:ring-offset-2">Mode Admin</button>
+        </div>
+        <form id="loginForm" class="grid gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-[110px_120px_auto_auto]" autocomplete="off">
+          <input id="loginUsername" name="username" type="text" value="employee" aria-label="Username" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold outline-none focus:border-corporate-teal focus:bg-white focus:ring-2 focus:ring-teal-100">
+          <input id="loginPassword" name="password" type="password" value="employee123" aria-label="Password" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold outline-none focus:border-corporate-teal focus:bg-white focus:ring-2 focus:ring-teal-100">
+          <button id="loginBtn" type="submit" class="rounded-xl bg-corporate-navy px-3 py-2 text-xs font-extrabold text-white hover:bg-slate-800">Login</button>
+          <button id="logoutBtn" type="button" class="hidden rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-700 hover:bg-white">Logout</button>
+        </form>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <span id="backendStatus" class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-600">LocalStorage mode</span>
+          <button id="addPositionBtn" type="button" class="hidden rounded-2xl bg-corporate-teal px-4 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-corporate-teal focus:ring-offset-2">+ Tambah Posisi</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="mainContent" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    <section class="no-print grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Ringkasan sistem">
+      <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-card"><p class="text-xs font-bold uppercase tracking-[.18em] text-slate-500">Total Posisi</p><h2 id="totalPositions" class="mt-2 text-3xl font-extrabold text-corporate-navy">0</h2><p class="mt-2 text-sm text-slate-600">Termasuk active, draft, inactive.</p></article>
+      <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-card"><p class="text-xs font-bold uppercase tracking-[.18em] text-slate-500">Departemen</p><h2 id="totalDepartments" class="mt-2 text-3xl font-extrabold text-corporate-navy">0</h2><p class="mt-2 text-sm text-slate-600">Berdasarkan data organisasi.</p></article>
+      <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-card"><p class="text-xs font-bold uppercase tracking-[.18em] text-slate-500">Mode Aktif</p><h2 id="activeRoleSummary" class="mt-2 text-2xl font-extrabold text-corporate-navy">Karyawan</h2><p class="mt-2 text-sm text-slate-600">Admin dapat mengubah data.</p></article>
+      <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-card"><p class="text-xs font-bold uppercase tracking-[.18em] text-slate-500">Validasi</p><h2 id="validationSummary" class="mt-2 text-2xl font-extrabold text-emerald-700">OK</h2><p id="validationDetail" class="mt-2 text-sm text-slate-600">Struktur valid.</p></article>
+    </section>
+
+    <section class="no-print mt-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-card sm:p-5" aria-label="Kontrol struktur organisasi">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div class="max-w-2xl"><h2 class="text-lg font-extrabold text-corporate-navy">Organization Tree View</h2><p class="mt-1 text-sm leading-6 text-slate-600">Klik card jabatan untuk membuka JD. Admin dapat menambah posisi, mengubah reporting line, status, document control, dan catatan perubahan.</p></div>
+        <div class="grid w-full gap-3 sm:grid-cols-2 lg:w-[820px] lg:grid-cols-4">
+          <label class="block"><span class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">Search</span><input id="searchInput" type="search" placeholder="Cari jabatan/departemen/JD" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100"></label>
+          <label class="block"><span class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">Departemen</span><select id="departmentFilter" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none transition focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100"><option value="all">Semua</option></select></label>
+          <label class="block"><span class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">Status</span><select id="statusFilter" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none transition focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100"><option value="all">Semua</option><option value="active">Active</option><option value="draft">Draft</option><option value="inactive">Inactive</option><option value="obsolete">Obsolete</option></select></label>
+          <label class="block"><span class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">As Of Date</span><input id="asOfDateInput" type="date" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none transition focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100"></label>
+        </div>
+      </div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button id="expandAllBtn" type="button" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Expand All</button>
+        <button id="collapseAllBtn" type="button" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Collapse All</button>
+        <button id="exportJsonBtn" type="button" class="rounded-xl border border-teal-200 bg-teal-50 px-3 py-2 text-xs font-bold text-teal-800 hover:bg-teal-100">Export JSON</button>
+        <label id="importJsonLabel" class="hidden cursor-pointer rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800 hover:bg-amber-100">Import JSON<input id="importJsonInput" type="file" accept="application/json,.json" class="hidden"></label>
+        <button id="resetDataBtn" type="button" class="hidden rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100">Reset Data Demo</button>
+        <button id="approvalsBtn" type="button" class="hidden rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-800 hover:bg-blue-100">Approvals</button>
+        <button id="auditLogBtn" type="button" class="hidden rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-white">Audit Log</button>
+      </div>
+      <div id="systemMessage" class="mt-4 hidden rounded-2xl border px-4 py-3 text-sm font-semibold" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="no-print mt-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-card sm:p-6" aria-label="Struktur organisasi">
+      <div id="treeContainer" class="custom-scrollbar max-h-[70vh] overflow-auto rounded-2xl bg-slate-50/75 p-4"></div>
+      <div id="emptyState" class="hidden rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center"><h3 class="text-lg font-extrabold text-corporate-navy">Data tidak ditemukan</h3><p class="mt-2 text-sm text-slate-600">Ubah kata kunci, departemen, atau status filter.</p></div>
+    </section>
+  </main>
+
+  <div id="modalOverlay" class="no-print fixed inset-0 z-50 hidden bg-slate-950/55 backdrop-blur-sm" aria-hidden="true"></div>
+  <aside id="detailPanel" class="no-print fixed inset-y-0 right-0 z-[60] hidden w-full max-w-3xl translate-x-full overflow-y-auto bg-white shadow-luxury transition-transform duration-300" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+    <div class="sticky top-0 z-10 border-b border-slate-200 bg-white/95 p-4 backdrop-blur sm:p-6">
+      <div class="flex items-start justify-between gap-4">
+        <div><p id="panelModeBadge" class="mb-2 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-slate-700">View</p><h2 id="panelTitle" class="text-xl font-extrabold text-corporate-navy">Detail Job Description</h2><p id="panelSubtitle" class="mt-1 text-sm text-slate-600"></p></div>
+        <button id="closePanelBtn" type="button" class="rounded-2xl border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-corporate-navy focus:outline-none focus:ring-2 focus:ring-corporate-teal focus:ring-offset-2" aria-label="Tutup panel"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      </div>
+      <div id="breadcrumb" class="mt-4 flex flex-wrap gap-2 text-xs font-semibold text-slate-500"></div>
+    </div>
+    <div id="panelContent" class="p-4 sm:p-6"></div>
+  </aside>
+
+  <div id="toast" class="no-print fixed bottom-4 left-1/2 z-[80] hidden -translate-x-1/2 rounded-2xl bg-corporate-navy px-5 py-3 text-sm font-bold text-white shadow-luxury"></div>
+  <div id="printArea"></div>
+
+  <script>
+    // =============================
+    // 1. DATA DEFAULT - GANTI BAGIAN INI DENGAN DATA RIIL ANDA
+    // =============================
+    const defaultOrgData = [
+      {
+            "id": "ceo",
+            "nama_jabatan": "President Director",
+            "parent_id": null,
+            "departemen": "Executive Management",
+            "job_code": "EXE-001",
+            "grade": "Director",
+            "status": "active",
+            "location": "Head Office",
+            "cost_center": "EXE",
+            "approved_headcount": 1,
+            "effective_date": "2026-07-04",
+            "updated_at": "2026-07-04",
+            "incumbents": [
+                  {
+                        "employee_id": "EMP-0001",
+                        "employee_name": "Nama Direktur",
+                        "assignment_status": "active",
+                        "start_date": "2026-01-01"
+                  }
+            ],
+            "movement_history": [],
+            "document_control": {
+                  "document_no": "JD-EXE-001",
+                  "revision": "Rev. 00",
+                  "effective_date": "2026-07-04",
+                  "review_date": "2027-07-04",
+                  "prepared_by": "Organization Development",
+                  "reviewed_by": "HR Director",
+                  "approved_by": "President Director",
+                  "approval_status": "approved",
+                  "change_notes": "Initial release."
+            },
+            "deskripsi_pekerjaan": {
+                  "ringkasan": "Memimpin arah strategis perusahaan, memastikan pencapaian target bisnis, tata kelola organisasi, dan keberlanjutan operasional.",
+                  "tugas": [
+                        "Menetapkan strategi jangka pendek dan jangka panjang perusahaan.",
+                        "Mengawasi kinerja seluruh fungsi bisnis dan fungsi pendukung.",
+                        "Mengambil keputusan strategis terkait investasi, ekspansi, dan prioritas organisasi."
+                  ],
+                  "wewenang": [
+                        "Menyetujui kebijakan strategis perusahaan.",
+                        "Menetapkan prioritas organisasi dan alokasi sumber daya utama."
+                  ],
+                  "kualifikasi": [
+                        "Pengalaman kepemimpinan senior minimal 10 tahun.",
+                        "Kemampuan strategic thinking, stakeholder management, dan governance yang kuat."
+                  ]
+            }
+      },
+      {
+            "id": "hr_director",
+            "nama_jabatan": "HR Director",
+            "parent_id": "ceo",
+            "departemen": "Human Resources",
+            "job_code": "HR-001",
+            "grade": "Director",
+            "status": "active",
+            "location": "Head Office",
+            "cost_center": "HR",
+            "approved_headcount": 1,
+            "effective_date": "2026-07-04",
+            "updated_at": "2026-07-04",
+            "incumbents": [
+                  {
+                        "employee_id": "EMP-0100",
+                        "employee_name": "Nama HR Director",
+                        "assignment_status": "active",
+                        "start_date": "2026-01-01"
+                  }
+            ],
+            "movement_history": [],
+            "document_control": {
+                  "document_no": "JD-HR-001",
+                  "revision": "Rev. 00",
+                  "effective_date": "2026-07-04",
+                  "review_date": "2027-07-04",
+                  "prepared_by": "Organization Development",
+                  "reviewed_by": "President Director",
+                  "approved_by": "President Director",
+                  "approval_status": "approved",
+                  "change_notes": "Initial release."
+            },
+            "deskripsi_pekerjaan": {
+                  "ringkasan": "Mengembangkan strategi SDM, organisasi, budaya, talenta, dan kepatuhan ketenagakerjaan untuk mendukung pencapaian bisnis.",
+                  "tugas": [
+                        "Menyusun strategi HR dan people agenda perusahaan.",
+                        "Mengawasi manpower planning, talent management, learning, performance, dan industrial relations.",
+                        "Memastikan kepatuhan kebijakan HR terhadap regulasi dan standar perusahaan."
+                  ],
+                  "wewenang": [
+                        "Menyetujui kebijakan dan program HR sesuai kewenangan.",
+                        "Memberikan rekomendasi perubahan organisasi dan struktur jabatan."
+                  ],
+                  "kualifikasi": [
+                        "Pengalaman HR leadership minimal 8 tahun.",
+                        "Menguasai HR strategy, organization development, labor regulation, dan change management."
+                  ]
+            }
+      },
+      {
+            "id": "finance_director",
+            "nama_jabatan": "Finance Director",
+            "parent_id": "ceo",
+            "departemen": "Finance",
+            "job_code": "FIN-001",
+            "grade": "Director",
+            "status": "active",
+            "location": "Head Office",
+            "cost_center": "FIN",
+            "approved_headcount": 1,
+            "effective_date": "2026-07-04",
+            "updated_at": "2026-07-04",
+            "incumbents": [],
+            "movement_history": [],
+            "document_control": {
+                  "document_no": "JD-FIN-001",
+                  "revision": "Rev. 00",
+                  "effective_date": "2026-07-04",
+                  "review_date": "2027-07-04",
+                  "prepared_by": "Finance",
+                  "reviewed_by": "President Director",
+                  "approved_by": "President Director",
+                  "approval_status": "approved",
+                  "change_notes": "Initial release."
+            },
+            "deskripsi_pekerjaan": {
+                  "ringkasan": "Memimpin pengelolaan keuangan, kontrol internal, pelaporan, perencanaan anggaran, dan pengendalian risiko keuangan.",
+                  "tugas": [
+                        "Mengawasi laporan keuangan dan budgeting.",
+                        "Mengelola cash flow, cost control, dan compliance finansial.",
+                        "Memberikan analisis finansial untuk keputusan bisnis."
+                  ],
+                  "wewenang": [
+                        "Menyetujui proses keuangan sesuai limit kewenangan.",
+                        "Menetapkan kontrol internal finansial."
+                  ],
+                  "kualifikasi": [
+                        "Pengalaman finance leadership minimal 8 tahun.",
+                        "Menguasai accounting, controlling, tax, dan financial analysis."
+                  ]
+            }
+      },
+      {
+            "id": "hr_manager",
+            "nama_jabatan": "HR Manager",
+            "parent_id": "hr_director",
+            "departemen": "Human Resources",
+            "job_code": "HR-002",
+            "grade": "Manager",
+            "status": "active",
+            "location": "Head Office",
+            "cost_center": "HR",
+            "approved_headcount": 1,
+            "effective_date": "2026-07-04",
+            "updated_at": "2026-07-04",
+            "incumbents": [
+                  {
+                        "employee_id": "EMP-0110",
+                        "employee_name": "Nama HR Manager",
+                        "assignment_status": "active",
+                        "start_date": "2026-03-01"
+                  }
+            ],
+            "movement_history": [
+                  {
+                        "movement_type": "promotion",
+                        "employee_id": "EMP-0110",
+                        "employee_name": "Nama HR Manager",
+                        "from_position_id": "hr_supervisor",
+                        "to_position_id": "hr_manager",
+                        "effective_date": "2026-03-01",
+                        "notes": "Promosi berdasarkan kebutuhan organisasi."
+                  }
+            ],
+            "document_control": {
+                  "document_no": "JD-HR-002",
+                  "revision": "Rev. 01",
+                  "effective_date": "2026-07-04",
+                  "review_date": "2027-07-04",
+                  "prepared_by": "Organization Development",
+                  "reviewed_by": "HR Director",
+                  "approved_by": "HR Director",
+                  "approval_status": "approved",
+                  "change_notes": "Penyesuaian scope HR operations dan OD."
+            },
+            "deskripsi_pekerjaan": {
+                  "ringkasan": "Mengelola pelaksanaan fungsi HR operasional dan people development agar selaras dengan kebutuhan bisnis.",
+                  "tugas": [
+                        "Mengelola recruitment, onboarding, training, performance, dan employee relations.",
+                        "Menyusun program pengembangan organisasi dan kompetensi.",
+                        "Memonitor HR metrics dan memberikan rekomendasi perbaikan."
+                  ],
+                  "wewenang": [
+                        "Memberikan rekomendasi keputusan HR kepada HR Director.",
+                        "Mengkoordinasikan pelaksanaan kebijakan HR lintas departemen."
+                  ],
+                  "kualifikasi": [
+                        "Pengalaman HR generalist/OD minimal 5 tahun.",
+                        "Mampu menggunakan data HR untuk analisis dan pengambilan keputusan."
+                  ]
+            }
+      },
+      {
+            "id": "od_specialist",
+            "nama_jabatan": "Organization Development Specialist",
+            "parent_id": "hr_manager",
+            "departemen": "Human Resources",
+            "job_code": "HR-OD-001",
+            "grade": "Specialist",
+            "status": "active",
+            "location": "Head Office",
+            "cost_center": "HR-OD",
+            "approved_headcount": 1,
+            "effective_date": "2026-07-04",
+            "updated_at": "2026-07-04",
+            "incumbents": [],
+            "movement_history": [],
+            "document_control": {
+                  "document_no": "JD-HR-OD-001",
+                  "revision": "Rev. 00",
+                  "effective_date": "2026-07-04",
+                  "review_date": "2027-07-04",
+                  "prepared_by": "Organization Development",
+                  "reviewed_by": "HR Manager",
+                  "approved_by": "HR Director",
+                  "approval_status": "draft",
+                  "change_notes": "Draft awal posisi OD Specialist."
+            },
+            "deskripsi_pekerjaan": {
+                  "ringkasan": "Mendukung desain organisasi, job description, competency framework, talent review, dan inisiatif pengembangan kapabilitas.",
+                  "tugas": [
+                        "Menganalisis kebutuhan struktur organisasi dan job description.",
+                        "Mendukung penyusunan competency framework dan learning roadmap.",
+                        "Membuat dashboard dan analisis people development."
+                  ],
+                  "wewenang": [
+                        "Mengusulkan perbaikan proses OD dan people development.",
+                        "Mengakses data HR yang relevan sesuai otorisasi."
+                  ],
+                  "kualifikasi": [
+                        "Pengalaman OD/L&D/HR analytics minimal 2 tahun.",
+                        "Menguasai Excel, dashboard, analisis organisasi, dan komunikasi bisnis."
+                  ]
+            }
+      },
+      {
+            "id": "recruitment_specialist",
+            "nama_jabatan": "Recruitment Specialist",
+            "parent_id": "hr_manager",
+            "departemen": "Human Resources",
+            "job_code": "HR-REC-001",
+            "grade": "Specialist",
+            "status": "active",
+            "location": "Head Office",
+            "cost_center": "HR-REC",
+            "approved_headcount": 1,
+            "effective_date": "2026-07-04",
+            "updated_at": "2026-07-04",
+            "incumbents": [],
+            "movement_history": [],
+            "document_control": {
+                  "document_no": "JD-HR-REC-001",
+                  "revision": "Rev. 00",
+                  "effective_date": "2026-07-04",
+                  "review_date": "2027-07-04",
+                  "prepared_by": "Talent Acquisition",
+                  "reviewed_by": "HR Manager",
+                  "approved_by": "HR Director",
+                  "approval_status": "approved",
+                  "change_notes": "Initial release."
+            },
+            "deskripsi_pekerjaan": {
+                  "ringkasan": "Mengelola proses rekrutmen end-to-end untuk memastikan pemenuhan kebutuhan tenaga kerja secara efektif dan tepat waktu.",
+                  "tugas": [
+                        "Melakukan sourcing, screening, interview coordination, dan offering.",
+                        "Mengelola kandidat, hiring manager, dan recruitment dashboard.",
+                        "Memastikan proses rekrutmen sesuai SLA dan standar perusahaan."
+                  ],
+                  "wewenang": [
+                        "Memberikan shortlist kandidat kepada hiring manager.",
+                        "Mengkoordinasikan proses seleksi dengan stakeholder terkait."
+                  ],
+                  "kualifikasi": [
+                        "Pengalaman talent acquisition minimal 2 tahun.",
+                        "Menguasai interview, kandidat pipeline, dan recruitment analytics."
+                  ]
+            }
+      },
+      {
+            "id": "finance_controller",
+            "nama_jabatan": "Finance Controller",
+            "parent_id": "finance_director",
+            "departemen": "Finance",
+            "job_code": "FIN-CTRL-001",
+            "grade": "Manager",
+            "status": "active",
+            "location": "Head Office",
+            "cost_center": "FIN-CTRL",
+            "approved_headcount": 1,
+            "effective_date": "2026-07-04",
+            "updated_at": "2026-07-04",
+            "incumbents": [],
+            "movement_history": [],
+            "document_control": {
+                  "document_no": "JD-FIN-CTRL-001",
+                  "revision": "Rev. 00",
+                  "effective_date": "2026-07-04",
+                  "review_date": "2027-07-04",
+                  "prepared_by": "Finance",
+                  "reviewed_by": "Finance Director",
+                  "approved_by": "Finance Director",
+                  "approval_status": "approved",
+                  "change_notes": "Initial release."
+            },
+            "deskripsi_pekerjaan": {
+                  "ringkasan": "Mengelola controlling, budget monitoring, cost analysis, dan pelaporan kinerja keuangan perusahaan.",
+                  "tugas": [
+                        "Menyusun budget dan forecast.",
+                        "Melakukan analisis varian biaya dan profitabilitas.",
+                        "Menyiapkan laporan manajemen berkala."
+                  ],
+                  "wewenang": [
+                        "Meminta data keuangan dari unit terkait.",
+                        "Memberikan rekomendasi kontrol biaya."
+                  ],
+                  "kualifikasi": [
+                        "Pengalaman controlling minimal 4 tahun.",
+                        "Menguasai budgeting, forecasting, dan financial analysis."
+                  ]
+            }
+      }
+];
+
+    // =============================
+    // 2. STATE MANAGEMENT
+    // =============================
+    const STORAGE_KEY = 'orgStructureJD.v2.data';
+    const ROLE_KEY = 'orgStructureJD.v2.role';
+    const COLLAPSED_KEY = 'orgStructureJD.v2.collapsed';
+    const API_TOKEN_KEY = 'orgStructureJD.v3.apiToken';
+    const POSITION_STATUSES = ['active', 'draft', 'inactive', 'obsolete'];
+    const APPROVAL_STATUSES = ['draft', 'reviewed', 'approved', 'obsolete'];
+    let orgData = loadData();
+    let viewOrgData = orgData;
+    let asOfDate = '';
+    let currentRole = localStorage.getItem(ROLE_KEY) === 'admin' ? 'admin' : 'employee';
+    let selectedPositionId = null;
+    let collapsedNodes = loadCollapsedNodes();
+    let apiToken = localStorage.getItem(API_TOKEN_KEY) || '';
+    let backendAvailable = false;
+    let currentUser = null;
+    let isSyncingBackend = false;
+    let appBusy = false;
+
+    const $ = (id) => document.getElementById(id);
+    const unique = (arr) => [...new Set(arr.filter(Boolean))];
+    const today = () => new Date().toISOString().slice(0, 10);
+    const escapeHtml = (value='') => String(value).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+    const listToText = (arr) => Array.isArray(arr) ? arr.join('\n') : '';
+    const textToList = (text) => String(text || '').split('\n').map(x => x.trim()).filter(Boolean);
+
+    function loadData(){
+      try { return normalizeData(JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultOrgData); }
+      catch { return normalizeData(defaultOrgData); }
+    }
+    function loadCollapsedNodes(){
+      try {
+        const parsed = JSON.parse(localStorage.getItem(COLLAPSED_KEY) || '[]');
+        return new Set(Array.isArray(parsed) ? parsed : []);
+      } catch {
+        return new Set();
+      }
+    }
+    function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(orgData, null, 2)); }
+    function saveRole(){ localStorage.setItem(ROLE_KEY, currentRole); }
+    function saveCollapsed(){ localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsedNodes])); }
+    function activeTreeData(){ return asOfDate ? viewOrgData : orgData; }
+    function setOrgData(data, persist=true){
+      orgData = normalizeData(data);
+      if (!asOfDate) viewOrgData = orgData;
+      if (persist) saveData();
+    }
+    function localAsOfData(dateValue){
+      if (!dateValue) return orgData;
+      return orgData.filter(item => item.effective_date <= dateValue && (!item.effective_end_date || item.effective_end_date >= dateValue));
+    }
+    async function applyAsOfDate(dateValue){
+      asOfDate = dateValue || '';
+      if (!asOfDate) {
+        viewOrgData = orgData;
+        render();
+        return;
+      }
+      if (backendAvailable && apiToken) {
+        setBusy(true, 'Memuat struktur berdasarkan effective date...');
+        try {
+          viewOrgData = normalizeData(await apiFetch(`/api/org-data?as_of=${encodeURIComponent(asOfDate)}`));
+          showSystemMessage(`Menampilkan struktur efektif per ${asOfDate}. Mode ini read-only.`, 'info');
+        } catch (error) {
+          showActionResult(readableError(error, 'Gagal memuat effective-dated view.'), false);
+          viewOrgData = localAsOfData(asOfDate);
+        } finally {
+          setBusy(false);
+        }
+      } else {
+        viewOrgData = localAsOfData(asOfDate);
+        showSystemMessage(`Menampilkan data lokal efektif per ${asOfDate}. Mode ini read-only.`, 'info');
+      }
+      if (selectedPositionId && !viewOrgData.some(item => item.id === selectedPositionId)) selectedPositionId = null;
+      render();
+    }
+
+    function showSystemMessage(message, type='info'){
+      const el = $('systemMessage');
+      if (!el) return;
+      const styles = {
+        info: 'border-blue-200 bg-blue-50 text-blue-800',
+        success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+        warning: 'border-amber-200 bg-amber-50 text-amber-800',
+        error: 'border-rose-200 bg-rose-50 text-rose-800'
+      };
+      el.textContent = message;
+      el.className = `mt-4 rounded-2xl border px-4 py-3 text-sm font-semibold ${styles[type] || styles.info}`;
+      el.classList.remove('hidden');
+    }
+    function clearSystemMessage(){
+      const el = $('systemMessage');
+      if (el) el.classList.add('hidden');
+    }
+    function setBusy(isBusy, message=''){
+      appBusy = isBusy;
+      const ids = ['loginUsername','loginPassword','loginBtn','logoutBtn','addPositionBtn','exportJsonBtn','resetDataBtn','approvalsBtn','auditLogBtn','employeeModeBtn','adminModeBtn','asOfDateInput'];
+      ids.forEach(id => { if ($(id)) $(id).disabled = isBusy; });
+      if ($('importJsonInput')) $('importJsonInput').disabled = isBusy;
+      if (isBusy && message) showSystemMessage(message, 'info');
+      updateBackendStatus();
+    }
+    function showActionResult(message, ok=true){
+      showSystemMessage(message, ok ? 'success' : 'error');
+      toast(message);
+    }
+    function readableError(error, fallback='Operasi gagal.'){
+      return error?.message || fallback;
+    }
+
+    async function apiFetch(path, options = {}){
+      const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+      if (apiToken) headers.Authorization = `Bearer ${apiToken}`;
+      const response = await fetch(path, { ...options, headers });
+      if (response.status === 204) return null;
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || payload.errors?.[0] || `HTTP ${response.status}`);
+      return payload;
+    }
+    async function detectBackend(){
+      try {
+        await apiFetch('/api/health', { headers: {} });
+        backendAvailable = true;
+      } catch {
+        backendAvailable = false;
+      }
+      await restoreBackendSession();
+      updateBackendStatus();
+    }
+    async function restoreBackendSession(){
+      if (!backendAvailable || !apiToken) return;
+      try {
+        currentUser = await apiFetch('/api/me');
+        currentRole = currentUser.role;
+        const data = await apiFetch('/api/org-data');
+        asOfDate = '';
+        if ($('asOfDateInput')) $('asOfDateInput').value = '';
+        setOrgData(data);
+      } catch {
+        apiToken = '';
+        currentUser = null;
+        localStorage.removeItem(API_TOKEN_KEY);
+      }
+    }
+    async function loginBackend(event){
+      event.preventDefault();
+      if (!backendAvailable) { toast('Backend API belum tersedia. Jalankan npm start.'); return; }
+      if (appBusy) return;
+      setBusy(true, 'Login ke backend...');
+      try {
+        const payload = await apiFetch('/api/auth/login', {
+          method: 'POST',
+          headers: {},
+          body: JSON.stringify({ username: $('loginUsername').value.trim(), password: $('loginPassword').value })
+        });
+        apiToken = payload.token;
+        currentUser = payload.user;
+        currentRole = currentUser.role;
+        localStorage.setItem(API_TOKEN_KEY, apiToken);
+        saveRole();
+        const data = await apiFetch('/api/org-data');
+        asOfDate = '';
+        if ($('asOfDateInput')) $('asOfDateInput').value = '';
+        setOrgData(data);
+        showActionResult(`Login ${currentUser.display_name} berhasil. Data backend dimuat.`);
+        render();
+      } catch (error) {
+        showActionResult(readableError(error, 'Login gagal.'), false);
+      } finally {
+        setBusy(false);
+      }
+    }
+    async function logoutBackend(){
+      if (appBusy) return;
+      setBusy(true, 'Logout dari backend...');
+      if (backendAvailable && apiToken) {
+        try { await apiFetch('/api/auth/logout', { method: 'POST' }); } catch {}
+      }
+      apiToken = '';
+      currentUser = null;
+      localStorage.removeItem(API_TOKEN_KEY);
+      currentRole = 'employee';
+      saveRole();
+      showActionResult('Logout berhasil. Mode local Employee aktif.');
+      setBusy(false);
+      render();
+    }
+    async function persistBackendData(mode = 'save'){
+      saveData();
+      if (!backendAvailable || !apiToken || currentRole !== 'admin') return true;
+      if (isSyncingBackend) return true;
+      isSyncingBackend = true;
+      setBusy(true, mode === 'import' ? 'Import JSON ke database...' : 'Menyimpan perubahan ke database...');
+      try {
+        const endpoint = mode === 'import' ? '/api/org-data/import' : '/api/org-data';
+        const method = mode === 'import' ? 'POST' : 'PUT';
+        const result = await apiFetch(endpoint, { method, body: JSON.stringify({ positions: orgData }) });
+        asOfDate = '';
+        if ($('asOfDateInput')) $('asOfDateInput').value = '';
+        setOrgData(result.positions || orgData);
+        return true;
+      } catch (error) {
+        showActionResult(`Backend sync gagal: ${readableError(error)}`, false);
+        return false;
+      } finally {
+        isSyncingBackend = false;
+        setBusy(false);
+      }
+    }
+    function apiPositionPath(id){
+      return `/api/positions/${encodeURIComponent(id)}`;
+    }
+    async function persistPositionBackend(item, mode = 'update'){
+      saveData();
+      if (!backendAvailable || !apiToken || currentRole !== 'admin') return true;
+      if (isSyncingBackend) return true;
+      isSyncingBackend = true;
+      setBusy(true, mode === 'create' ? 'Membuat posisi di database...' : 'Menyimpan posisi ke database...');
+      try {
+        const endpoint = mode === 'create' ? '/api/positions' : apiPositionPath(item.id);
+        const method = mode === 'create' ? 'POST' : 'PUT';
+        const result = await apiFetch(endpoint, { method, body: JSON.stringify({ position: item }) });
+        asOfDate = '';
+        if ($('asOfDateInput')) $('asOfDateInput').value = '';
+        setOrgData(result.positions || orgData);
+        return true;
+      } catch (error) {
+        showActionResult(`Backend sync gagal: ${readableError(error)}`, false);
+        return false;
+      } finally {
+        isSyncingBackend = false;
+        setBusy(false);
+      }
+    }
+    async function persistPositionStatusBackend(id, status){
+      saveData();
+      if (!backendAvailable || !apiToken || currentRole !== 'admin') return true;
+      if (isSyncingBackend) return true;
+      isSyncingBackend = true;
+      setBusy(true, 'Mengubah status posisi di database...');
+      try {
+        const result = await apiFetch(`${apiPositionPath(id)}/status`, { method: 'PATCH', body: JSON.stringify({ status }) });
+        asOfDate = '';
+        if ($('asOfDateInput')) $('asOfDateInput').value = '';
+        setOrgData(result.positions || orgData);
+        return true;
+      } catch (error) {
+        showActionResult(`Backend sync gagal: ${readableError(error)}`, false);
+        return false;
+      } finally {
+        isSyncingBackend = false;
+        setBusy(false);
+      }
+    }
+    async function resetBackendOrLocal(){
+      if (backendAvailable && apiToken && currentRole === 'admin') {
+        setBusy(true, 'Reset data demo di database...');
+        try {
+          const result = await apiFetch('/api/org-data/reset', { method: 'POST' });
+          asOfDate = '';
+          if ($('asOfDateInput')) $('asOfDateInput').value = '';
+          setOrgData(result.positions || defaultOrgData);
+        } finally {
+          setBusy(false);
+        }
+        return;
+      }
+      localStorage.removeItem(STORAGE_KEY);
+      setOrgData(defaultOrgData, false);
+    }
+    function updateBackendStatus(){
+      if (!$('backendStatus')) return;
+      const text = appBusy ? 'Working with backend...' : currentUser ? `Backend: ${currentUser.display_name} (${currentUser.role})` : backendAvailable ? 'Backend ready - login required' : 'LocalStorage mode';
+      $('backendStatus').textContent = text;
+      $('backendStatus').className = `rounded-full border px-3 py-1.5 text-xs font-bold ${appBusy ? 'border-blue-200 bg-blue-50 text-blue-800' : currentUser ? 'border-teal-200 bg-teal-50 text-teal-800' : backendAvailable ? 'border-amber-200 bg-amber-50 text-amber-800' : 'border-slate-200 bg-slate-50 text-slate-600'}`;
+      $('loginUsername').classList.toggle('hidden', !!currentUser);
+      $('loginPassword').classList.toggle('hidden', !!currentUser);
+      $('loginBtn').classList.toggle('hidden', !!currentUser);
+      $('logoutBtn').classList.toggle('hidden', !currentUser);
+    }
+
+    function normalizeData(data){
+      return (Array.isArray(data) ? data : []).map(item => ({
+        id: String(item.id || '').trim(),
+        nama_jabatan: String(item.nama_jabatan || 'Untitled Position').trim() || 'Untitled Position',
+        parent_id: item.parent_id ? String(item.parent_id).trim() : null,
+        departemen: String(item.departemen || '-').trim() || '-',
+        job_code: String(item.job_code || '-').trim() || '-',
+        grade: String(item.grade || '-').trim() || '-',
+        status: POSITION_STATUSES.includes(item.status) ? item.status : 'active',
+        location: String(item.location || '-').trim() || '-',
+        cost_center: String(item.cost_center || '-').trim() || '-',
+        approved_headcount: Number.isFinite(Number(item.approved_headcount)) && Number(item.approved_headcount) > 0 ? Number(item.approved_headcount) : 1,
+        effective_date: item.effective_date || today(),
+        updated_at: item.updated_at || today(),
+        incumbents: Array.isArray(item.incumbents) ? item.incumbents : [],
+        movement_history: Array.isArray(item.movement_history) ? item.movement_history : [],
+        document_control: {
+          document_no: item.document_control?.document_no || `JD-${String(item.id || '').toUpperCase()}`,
+          revision: item.document_control?.revision || 'Rev. 00',
+          effective_date: item.document_control?.effective_date || item.effective_date || today(),
+          review_date: item.document_control?.review_date || '',
+          prepared_by: item.document_control?.prepared_by || '',
+          reviewed_by: item.document_control?.reviewed_by || '',
+          approved_by: item.document_control?.approved_by || '',
+          approval_status: APPROVAL_STATUSES.includes(item.document_control?.approval_status) ? item.document_control.approval_status : 'draft',
+          change_notes: item.document_control?.change_notes || ''
+        },
+        deskripsi_pekerjaan: {
+          ringkasan: item.deskripsi_pekerjaan?.ringkasan || '',
+          tugas: Array.isArray(item.deskripsi_pekerjaan?.tugas) ? item.deskripsi_pekerjaan.tugas : [],
+          wewenang: Array.isArray(item.deskripsi_pekerjaan?.wewenang) ? item.deskripsi_pekerjaan.wewenang : [],
+          kualifikasi: Array.isArray(item.deskripsi_pekerjaan?.kualifikasi) ? item.deskripsi_pekerjaan.kualifikasi : []
+        }
+      })).filter(item => item.id);
+    }
+
+    // =============================
+    // 3. VALIDASI STRUKTUR
+    // =============================
+    function validateStructure(data){
+      const errors = [];
+      const ids = data.map(x => x.id);
+      const idSet = new Set(ids);
+      if (data.some(x => !String(x.id || '').trim())) errors.push('Ada posisi tanpa ID.');
+      if (idSet.size !== ids.length) errors.push('Ada ID posisi yang duplikat.');
+      data.forEach(item => {
+        if (item.parent_id && !idSet.has(item.parent_id)) errors.push(`Parent position tidak ditemukan untuk ${item.nama_jabatan}.`);
+        if (item.parent_id === item.id) errors.push(`${item.nama_jabatan} tidak boleh menjadi atasan dirinya sendiri.`);
+        if (!POSITION_STATUSES.includes(item.status)) errors.push(`Status posisi tidak valid untuk ${item.nama_jabatan}.`);
+        if (!APPROVAL_STATUSES.includes(item.document_control?.approval_status)) errors.push(`Approval status tidak valid untuk ${item.nama_jabatan}.`);
+      });
+      data.forEach(item => { if (hasCircularParent(item.id, item.parent_id, data)) errors.push(`Circular reporting terdeteksi pada ${item.nama_jabatan}.`); });
+      return errors;
+    }
+    function hasCircularParent(id, parentId, data){
+      const seen = new Set([id]);
+      let currentParent = parentId;
+      while (currentParent) {
+        if (seen.has(currentParent)) return true;
+        seen.add(currentParent);
+        const parent = data.find(x => x.id === currentParent);
+        currentParent = parent?.parent_id || null;
+      }
+      return false;
+    }
+    function wouldCreateCycle(positionId, newParentId){ return hasCircularParent(positionId, newParentId, orgData); }
+    function isValidParentId(parentId, data = orgData){ return !parentId || data.some(x => x.id === parentId); }
+
+    // =============================
+    // 4. TREE BUILDER DAN FILTERING
+    // =============================
+    function getChildren(parentId, data = activeTreeData()){ return data.filter(item => item.parent_id === parentId).sort((a,b) => a.nama_jabatan.localeCompare(b.nama_jabatan)); }
+    function getRoots(data = activeTreeData()){ return data.filter(item => !item.parent_id || !data.some(parent => parent.id === item.parent_id)); }
+    function getReportingPath(positionId, data = activeTreeData()){
+      const path = [];
+      const visited = new Set();
+      let current = data.find(x => x.id === positionId);
+      while (current && !visited.has(current.id)) { path.unshift(current); visited.add(current.id); current = data.find(x => x.id === current.parent_id); }
+      return path;
+    }
+    function buildSearchText(item){
+      return [item.nama_jabatan, item.departemen, item.job_code, item.grade, item.status, item.location, item.cost_center, item.deskripsi_pekerjaan?.ringkasan, ...(item.deskripsi_pekerjaan?.tugas || []), ...(item.deskripsi_pekerjaan?.wewenang || []), ...(item.deskripsi_pekerjaan?.kualifikasi || [])].join(' ').toLowerCase();
+    }
+    function getFilteredSet(){
+      const q = $('searchInput').value.trim().toLowerCase();
+      const dept = $('departmentFilter').value;
+      const status = $('statusFilter').value;
+      const data = activeTreeData();
+      const direct = new Set();
+      data.forEach(item => {
+        const matchQ = !q || buildSearchText(item).includes(q);
+        const matchDept = dept === 'all' || item.departemen === dept;
+        const matchStatus = status === 'all' || item.status === status;
+        if (matchQ && matchDept && matchStatus) direct.add(item.id);
+      });
+      // Tampilkan juga ancestor agar hasil search tetap terlihat dalam konteks struktur.
+      const withAncestors = new Set(direct);
+      direct.forEach(id => getReportingPath(id, data).forEach(x => withAncestors.add(x.id)));
+      return { direct, withAncestors };
+    }
+
+    // =============================
+    // 5. RENDERING
+    // =============================
+    function render(){
+      applyRoleUi();
+      populateDepartmentFilter();
+      renderSummary();
+      renderTree();
+      if (selectedPositionId) renderPanel(selectedPositionId);
+    }
+    function applyRoleUi(){
+      const isAdmin = currentRole === 'admin';
+      const lockedByBackend = backendAvailable && !!currentUser;
+      $('employeeModeBtn').className = `rounded-xl px-4 py-2 text-sm font-bold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-corporate-teal focus:ring-offset-2 ${!isAdmin ? 'bg-corporate-navy text-white shadow-sm' : 'text-slate-600 hover:bg-white'} ${lockedByBackend ? 'cursor-not-allowed opacity-80' : ''}`;
+      $('adminModeBtn').className = `rounded-xl px-4 py-2 text-sm font-bold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-corporate-teal focus:ring-offset-2 ${isAdmin ? 'bg-corporate-navy text-white shadow-sm' : 'text-slate-600 hover:bg-white'} ${lockedByBackend ? 'cursor-not-allowed opacity-80' : ''}`;
+      $('employeeModeBtn').disabled = lockedByBackend;
+      $('adminModeBtn').disabled = lockedByBackend;
+      $('addPositionBtn').classList.toggle('hidden', !isAdmin);
+      $('exportJsonBtn').classList.toggle('hidden', !isAdmin);
+      $('importJsonLabel').classList.toggle('hidden', !isAdmin);
+      $('resetDataBtn').classList.toggle('hidden', !isAdmin);
+      $('approvalsBtn').classList.toggle('hidden', !isAdmin);
+      $('auditLogBtn').classList.toggle('hidden', !isAdmin);
+      updateBackendStatus();
+    }
+    function renderSummary(){
+      const data = activeTreeData();
+      const departments = unique(data.map(x => x.departemen));
+      const errors = validateStructure(data);
+      $('totalPositions').textContent = data.length;
+      $('totalDepartments').textContent = departments.length;
+      $('activeRoleSummary').textContent = currentRole === 'admin' ? 'Admin' : 'Karyawan';
+      $('validationSummary').textContent = errors.length ? 'Warning' : 'OK';
+      $('validationSummary').className = `mt-2 text-2xl font-extrabold ${errors.length ? 'text-amber-700' : 'text-emerald-700'}`;
+      $('validationDetail').textContent = errors.length ? errors.slice(0,2).join(' ') : 'Struktur valid.';
+    }
+    function populateDepartmentFilter(){
+      const select = $('departmentFilter');
+      const current = select.value || 'all';
+      const departments = unique(activeTreeData().map(x => x.departemen)).sort();
+      select.innerHTML = '<option value="all">Semua</option>' + departments.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+      select.value = departments.includes(current) ? current : 'all';
+    }
+    function renderTree(){
+      const container = $('treeContainer');
+      const { direct, withAncestors } = getFilteredSet();
+      const data = activeTreeData();
+      const roots = getRoots(data).filter(root => withAncestors.has(root.id));
+      const html = roots.map(root => renderNode(root, direct, withAncestors, 0)).join('');
+      container.innerHTML = html || '';
+      $('emptyState').classList.toggle('hidden', !!html);
+      container.classList.toggle('hidden', !html);
+    }
+    function statusBadge(status){
+      const map = { active:'bg-emerald-50 text-emerald-700 border-emerald-200', draft:'bg-amber-50 text-amber-700 border-amber-200', inactive:'bg-slate-100 text-slate-600 border-slate-200', obsolete:'bg-rose-50 text-rose-700 border-rose-200' };
+      return `<span class="rounded-full border px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide ${map[status] || map.draft}">${escapeHtml(status)}</span>`;
+    }
+    function approvalBadge(status){
+      const map = { approved:'bg-emerald-50 text-emerald-700 border-emerald-200', reviewed:'bg-blue-50 text-blue-700 border-blue-200', draft:'bg-amber-50 text-amber-700 border-amber-200', obsolete:'bg-rose-50 text-rose-700 border-rose-200' };
+      return `<span class="rounded-full border px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide ${map[status] || map.draft}">${escapeHtml(status)}</span>`;
+    }
+    function renderNode(item, direct, visibleSet, depth){
+      const children = getChildren(item.id).filter(child => visibleSet.has(child.id));
+      const hasChildren = children.length > 0;
+      const isCollapsed = collapsedNodes.has(item.id);
+      const isDirect = direct.has(item.id);
+      const opacity = item.status === 'inactive' || item.status === 'obsolete' ? 'opacity-70' : '';
+      return `<div class="tree-node-wrap mb-3 fade-in">
+        <div class="group flex items-start gap-2">
+          <button type="button" class="mt-4 flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-xs font-extrabold text-slate-500 shadow-sm transition hover:bg-slate-100 ${hasChildren ? '' : 'invisible'}" onclick="toggleCollapse('${escapeHtml(item.id)}')" aria-label="${isCollapsed ? 'Expand' : 'Collapse'} ${escapeHtml(item.nama_jabatan)}">${isCollapsed ? '+' : 'âˆ’'}</button>
+          <button type="button" onclick="openPanel('${escapeHtml(item.id)}')" class="w-full min-w-[260px] rounded-3xl border ${isDirect ? 'border-corporate-teal bg-white ring-4 ring-teal-50' : 'border-slate-200 bg-white'} p-4 text-left shadow-card transition duration-200 hover:-translate-y-0.5 hover:border-corporate-teal hover:shadow-luxury focus:outline-none focus:ring-4 focus:ring-teal-100 ${opacity}">
+            <div class="flex flex-wrap items-center gap-2">${statusBadge(item.status)} ${approvalBadge(item.document_control?.approval_status || 'draft')}<span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">${escapeHtml(item.grade)}</span></div>
+            <h3 class="mt-2 text-base font-extrabold text-corporate-navy">${escapeHtml(item.nama_jabatan)}</h3>
+            <p class="mt-1 text-sm font-semibold text-slate-600">${escapeHtml(item.departemen)} Â· ${escapeHtml(item.job_code)}</p>
+            <div class="mt-3 grid gap-2 text-xs text-slate-500 sm:grid-cols-3"><span><b>Location:</b> ${escapeHtml(item.location)}</span><span><b>HC:</b> ${escapeHtml(item.approved_headcount)}</span><span><b>Eff:</b> ${escapeHtml(item.effective_date)}</span></div>
+          </button>
+        </div>
+        ${hasChildren && !isCollapsed ? `<div class="tree-branch mt-3">${children.map(child => renderNode(child, direct, visibleSet, depth+1)).join('')}</div>` : ''}
+      </div>`;
+    }
+
+    // =============================
+    // 6. PANEL VIEW/EDIT
+    // =============================
+    window.openPanel = function(id){ selectedPositionId = id; renderPanel(id); $('modalOverlay').classList.remove('hidden'); $('detailPanel').classList.remove('hidden'); requestAnimationFrame(() => $('detailPanel').classList.remove('translate-x-full')); };
+    function closePanel(){ $('detailPanel').classList.add('translate-x-full'); setTimeout(() => { $('modalOverlay').classList.add('hidden'); $('detailPanel').classList.add('hidden'); }, 240); }
+    function renderPanel(id, mode='view'){
+      const item = activeTreeData().find(x => x.id === id);
+      if (!item) return;
+      const isAdmin = currentRole === 'admin';
+      const historical = !!asOfDate;
+      $('panelModeBadge').textContent = historical ? 'Effective-Dated View' : isAdmin ? 'Admin Editable' : 'View Only';
+      $('panelModeBadge').className = `mb-2 inline-flex rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-wide ${historical ? 'bg-blue-50 text-blue-800' : isAdmin ? 'bg-teal-50 text-teal-800' : 'bg-slate-100 text-slate-700'}`;
+      $('panelTitle').textContent = item.nama_jabatan;
+      $('panelSubtitle').textContent = `${item.departemen} Â· ${item.job_code} Â· ${item.grade}${historical ? ` Â· As of ${asOfDate}` : ''}`;
+      $('breadcrumb').innerHTML = getReportingPath(item.id).map((p, i, arr) => `<span class="rounded-full ${i === arr.length-1 ? 'bg-corporate-navy text-white' : 'bg-slate-100 text-slate-600'} px-3 py-1">${escapeHtml(p.nama_jabatan)}</span>`).join('<span class="self-center text-slate-300">â†’</span>');
+      $('panelContent').innerHTML = isAdmin && !historical ? renderAdminForm(item) : `${historical ? '<div class="mb-4 rounded-3xl border border-blue-200 bg-blue-50 p-4 text-sm font-semibold text-blue-900">Effective-dated view bersifat read-only. Kosongkan As Of Date untuk kembali ke data aktif.</div>' : ''}${renderReadOnly(item)}`;
+    }
+    function renderReadOnly(item){
+      return `<div class="space-y-5">
+        ${renderPositionMeta(item)}
+        ${section('Ringkasan Jabatan', `<p class="text-sm leading-7 text-slate-700">${escapeHtml(item.deskripsi_pekerjaan.ringkasan)}</p>`)}
+        ${section('Tugas Utama', orderedList(item.deskripsi_pekerjaan.tugas))}
+        ${section('Wewenang', orderedList(item.deskripsi_pekerjaan.wewenang))}
+        ${section('Kualifikasi', orderedList(item.deskripsi_pekerjaan.kualifikasi))}
+        ${section('Pemegang Posisi', renderIncumbents(item))}
+        ${section('Riwayat Mutasi / Promosi', renderMovementHistory(item))}
+        ${section('Document Control', renderDocumentControl(item))}
+        <div class="sticky bottom-0 -mx-4 border-t border-slate-200 bg-white/95 p-4 backdrop-blur sm:-mx-6 sm:px-6"><button onclick="printJD('${escapeHtml(item.id)}')" class="w-full rounded-2xl bg-corporate-navy px-5 py-3 text-sm font-extrabold text-white shadow-card transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200">Download Job Description (PDF)</button></div>
+      </div>`;
+    }
+    function renderPositionMeta(item){
+      return `<div class="grid gap-3 sm:grid-cols-2"><div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p class="text-xs font-bold uppercase tracking-wide text-slate-500">Position ID</p><p class="mt-1 font-extrabold text-corporate-navy">${escapeHtml(item.id)}</p></div><div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p class="text-xs font-bold uppercase tracking-wide text-slate-500">Status</p><div class="mt-1">${statusBadge(item.status)}</div></div><div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p class="text-xs font-bold uppercase tracking-wide text-slate-500">Location / Cost Center</p><p class="mt-1 font-extrabold text-corporate-navy">${escapeHtml(item.location)} Â· ${escapeHtml(item.cost_center)}</p></div><div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p class="text-xs font-bold uppercase tracking-wide text-slate-500">Effective Date / HC</p><p class="mt-1 font-extrabold text-corporate-navy">${escapeHtml(item.effective_date)} Â· ${escapeHtml(item.approved_headcount)} HC</p></div></div>`;
+    }
+    function section(title, body){ return `<section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"><h3 class="text-sm font-extrabold uppercase tracking-[.16em] text-corporate-navy">${escapeHtml(title)}</h3><div class="mt-4">${body}</div></section>`; }
+    function orderedList(items){ return items?.length ? `<ol class="space-y-2 text-sm leading-7 text-slate-700">${items.map((x,i)=>`<li class="flex gap-3"><span class="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-extrabold text-slate-600">${i+1}</span><span>${escapeHtml(x)}</span></li>`).join('')}</ol>` : '<p class="text-sm text-slate-500">Belum ada data.</p>'; }
+    function renderIncumbents(item){ return item.incumbents?.length ? `<div class="space-y-2">${item.incumbents.map(x => `<div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm"><b>${escapeHtml(x.employee_name)}</b><p class="text-slate-600">${escapeHtml(x.employee_id)} Â· ${escapeHtml(x.assignment_status)} Â· Start ${escapeHtml(x.start_date)}</p></div>`).join('')}</div>` : '<p class="text-sm text-slate-500">Belum ada pemegang posisi.</p>'; }
+    function renderMovementHistory(item){ return item.movement_history?.length ? `<div class="space-y-2">${item.movement_history.map(x => `<div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm"><b class="capitalize">${escapeHtml(x.movement_type)}</b><p class="text-slate-600">${escapeHtml(x.employee_name || x.employee_id || '-')} Â· ${escapeHtml(x.effective_date || '-')}</p><p class="mt-1 text-slate-600">${escapeHtml(x.notes || '')}</p></div>`).join('')}</div>` : '<p class="text-sm text-slate-500">Belum ada riwayat mutasi/promosi.</p>'; }
+    function renderDocumentControl(item){
+      const dc = item.document_control || {};
+      return `<dl class="grid gap-3 text-sm sm:grid-cols-2"><div><dt class="font-bold text-slate-500">Document No.</dt><dd class="mt-1 text-corporate-navy font-extrabold">${escapeHtml(dc.document_no)}</dd></div><div><dt class="font-bold text-slate-500">Revision</dt><dd class="mt-1 text-corporate-navy font-extrabold">${escapeHtml(dc.revision)}</dd></div><div><dt class="font-bold text-slate-500">Document Effective Date</dt><dd class="mt-1 text-slate-700">${escapeHtml(dc.effective_date || '-')}</dd></div><div><dt class="font-bold text-slate-500">Review Date</dt><dd class="mt-1 text-slate-700">${escapeHtml(dc.review_date || '-')}</dd></div><div><dt class="font-bold text-slate-500">Approval Status</dt><dd class="mt-1">${approvalBadge(dc.approval_status)}</dd></div><div><dt class="font-bold text-slate-500">Prepared / Reviewed / Approved</dt><dd class="mt-1 text-slate-700">${escapeHtml(dc.prepared_by || '-')} / ${escapeHtml(dc.reviewed_by || '-')} / ${escapeHtml(dc.approved_by || '-')}</dd></div><div class="sm:col-span-2"><dt class="font-bold text-slate-500">Change Notes</dt><dd class="mt-1 text-slate-700">${escapeHtml(dc.change_notes || '-')}</dd></div></dl>`;
+    }
+    function renderAdminForm(item){
+      const locked = backendAvailable && apiToken && item.document_control?.approval_status === 'approved';
+      if (locked) {
+        return `<div class="space-y-5">
+          ${renderGovernanceActions(item)}
+          <div class="rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-900">JD approved sudah terkunci. Buat draft revision untuk melakukan perubahan berikutnya.</div>
+          ${renderReadOnly(item)}
+        </div>`;
+      }
+      const parentOptions = orgData.filter(x => x.id !== item.id && !wouldCreateCycle(item.id, x.id)).map(x => `<option value="${escapeHtml(x.id)}" ${item.parent_id === x.id ? 'selected' : ''}>${escapeHtml(x.nama_jabatan)} â€” ${escapeHtml(x.departemen)}</option>`).join('');
+      return `<form id="positionForm" class="space-y-5" onsubmit="savePositionForm(event, '${escapeHtml(item.id)}')">
+        ${renderGovernanceActions(item)}
+        <div class="rounded-3xl border border-teal-200 bg-teal-50 p-4 text-sm text-teal-900"><b>Mode Admin:</b> Simpan perubahan sebagai draft, lalu submit untuk approval. Approval final dilakukan dari panel Approval Workflow.</div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          ${input('Position ID','id',item.id,true)}${input('Nama Jabatan','nama_jabatan',item.nama_jabatan)}
+          ${input('Departemen','departemen',item.departemen)}${input('Job Code','job_code',item.job_code)}
+          ${input('Grade','grade',item.grade)}${input('Location','location',item.location)}
+          ${input('Cost Center','cost_center',item.cost_center)}${input('Approved Headcount','approved_headcount',item.approved_headcount,'number')}
+          ${input('Effective Date','effective_date',item.effective_date,'date')}
+          <label class="block"><span class="mb-1 block text-xs font-extrabold uppercase tracking-wide text-slate-500">Status Posisi</span><select name="status" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100">${POSITION_STATUSES.map(s=>`<option value="${s}" ${item.status===s?'selected':''}>${s}</option>`).join('')}</select></label>
+          <label class="block sm:col-span-2"><span class="mb-1 block text-xs font-extrabold uppercase tracking-wide text-slate-500">Atasan Langsung / Parent Position</span><select name="parent_id" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100"><option value="">Tidak ada / Root</option>${parentOptions}</select><p class="mt-1 text-xs text-slate-500">Digunakan untuk mutasi struktur atau perubahan reporting line.</p></label>
+        </div>
+        ${textarea('Ringkasan Jabatan','ringkasan',item.deskripsi_pekerjaan.ringkasan,4)}
+        ${textarea('Tugas Utama - satu baris per item','tugas',listToText(item.deskripsi_pekerjaan.tugas),7)}
+        ${textarea('Wewenang - satu baris per item','wewenang',listToText(item.deskripsi_pekerjaan.wewenang),5)}
+        ${textarea('Kualifikasi - satu baris per item','kualifikasi',listToText(item.deskripsi_pekerjaan.kualifikasi),5)}
+        <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"><h3 class="text-sm font-extrabold uppercase tracking-[.16em] text-corporate-navy">Document Control</h3><div class="mt-4 grid gap-4 sm:grid-cols-2">
+          ${input('Document No.','document_no',item.document_control.document_no)}${input('Revision','revision',item.document_control.revision)}
+          ${input('Document Effective Date','dc_effective_date',item.document_control.effective_date,'date')}${input('Review Date','review_date',item.document_control.review_date,'date')}
+          ${input('Prepared By','prepared_by',item.document_control.prepared_by)}${input('Reviewed By','reviewed_by',item.document_control.reviewed_by)}
+          ${input('Approved By','approved_by',item.document_control.approved_by)}
+          <label class="block"><span class="mb-1 block text-xs font-extrabold uppercase tracking-wide text-slate-500">Approval Status</span><select name="approval_status" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100">${APPROVAL_STATUSES.filter(s=>s !== 'approved').map(s=>`<option value="${s}" ${item.document_control.approval_status===s?'selected':''}>${s}</option>`).join('')}</select><p class="mt-1 text-xs text-slate-500">Approved hanya melalui Approval Workflow.</p></label>
+        </div>${textarea('Change Notes','change_notes',item.document_control.change_notes,3)}</section>
+        <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"><h3 class="text-sm font-extrabold uppercase tracking-[.16em] text-corporate-navy">Pemegang Posisi & Mutasi/Promosi</h3><p class="mt-2 text-xs text-slate-500">Format MVP: satu baris per assignment/history. Nanti bisa dipindahkan ke database Employee Assignment.</p><div class="mt-4 grid gap-4">${textarea('Incumbents: employee_id | employee_name | status | start_date','incumbents',serializeIncumbents(item.incumbents),4)}${textarea('Movement History: type | employee_id | employee_name | from_position_id | to_position_id | effective_date | notes','movement_history',serializeMovements(item.movement_history),5)}</div></section>
+        <div class="sticky bottom-0 -mx-4 flex flex-col gap-2 border-t border-slate-200 bg-white/95 p-4 backdrop-blur sm:-mx-6 sm:flex-row sm:px-6"><button type="submit" class="flex-1 rounded-2xl bg-corporate-teal px-5 py-3 text-sm font-extrabold text-white shadow-card hover:bg-teal-800">Simpan Draft</button><button type="button" onclick="submitForApproval('${escapeHtml(item.id)}')" class="flex-1 rounded-2xl border border-blue-200 bg-blue-50 px-5 py-3 text-sm font-extrabold text-blue-800 hover:bg-blue-100">Submit Approval</button><button type="button" onclick="printJD('${escapeHtml(item.id)}')" class="flex-1 rounded-2xl bg-corporate-navy px-5 py-3 text-sm font-extrabold text-white shadow-card hover:bg-slate-800">Download PDF</button><button type="button" onclick="markInactive('${escapeHtml(item.id)}')" class="rounded-2xl border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-extrabold text-rose-700 hover:bg-rose-100">Nonaktifkan</button></div>
+      </form>`;
+    }
+    function renderGovernanceActions(item){
+      const backendAdmin = backendAvailable && apiToken && currentRole === 'admin';
+      const status = item.document_control?.approval_status || 'draft';
+      const base = `<button type="button" onclick="showVersions('${escapeHtml(item.id)}')" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-slate-700 hover:bg-slate-50">Version History</button>`;
+      if (!backendAdmin) {
+        return `<div class="rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><div class="flex flex-wrap items-center justify-between gap-3"><span><b>Governance:</b> Login Admin backend diperlukan untuk workflow dan version lock.</span>${base}</div></div>`;
+      }
+      if (status === 'approved') {
+        return `<div class="rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900"><div class="flex flex-wrap items-center justify-between gap-3"><span><b>Approved & locked.</b> Revision ${escapeHtml(item.document_control.revision || '-')} tidak dapat diedit langsung.</span><div class="flex flex-wrap gap-2">${base}<button type="button" onclick="createDraftRevision('${escapeHtml(item.id)}')" class="rounded-xl bg-corporate-teal px-3 py-2 text-xs font-extrabold text-white hover:bg-teal-800">Buat Draft Revisi</button></div></div></div>`;
+      }
+      return `<div class="rounded-3xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900"><div class="flex flex-wrap items-center justify-between gap-3"><span><b>Workflow:</b> Status dokumen ${escapeHtml(status)}. Simpan draft sebelum submit approval.</span><div class="flex flex-wrap gap-2">${base}<button type="button" onclick="submitForApproval('${escapeHtml(item.id)}')" class="rounded-xl bg-blue-700 px-3 py-2 text-xs font-extrabold text-white hover:bg-blue-800">Submit Approval</button></div></div></div>`;
+    }
+    function input(label, name, value, type='text'){
+      const readonly = type === true;
+      const actualType = readonly ? 'text' : type;
+      return `<label class="block"><span class="mb-1 block text-xs font-extrabold uppercase tracking-wide text-slate-500">${escapeHtml(label)}</span><input name="${escapeHtml(name)}" type="${actualType}" value="${escapeHtml(value ?? '')}" ${readonly ? 'readonly' : ''} class="w-full rounded-2xl border border-slate-200 ${readonly ? 'bg-slate-100 text-slate-500' : 'bg-slate-50'} px-4 py-3 text-sm font-semibold outline-none focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100"></label>`;
+    }
+    function textarea(label, name, value, rows=4){ return `<label class="block"><span class="mb-1 block text-xs font-extrabold uppercase tracking-wide text-slate-500">${escapeHtml(label)}</span><textarea name="${escapeHtml(name)}" rows="${rows}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 outline-none focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100">${escapeHtml(value || '')}</textarea></label>`; }
+    function serializeIncumbents(items){ return (items||[]).map(x => [x.employee_id,x.employee_name,x.assignment_status,x.start_date].map(v=>v||'').join(' | ')).join('\n'); }
+    function parseIncumbents(text){ return textToList(text).map(line => { const [employee_id='', employee_name='', assignment_status='active', start_date=''] = line.split('|').map(x=>x.trim()); return {employee_id, employee_name, assignment_status, start_date}; }).filter(x=>x.employee_id || x.employee_name); }
+    function serializeMovements(items){ return (items||[]).map(x => [x.movement_type,x.employee_id,x.employee_name,x.from_position_id,x.to_position_id,x.effective_date,x.notes].map(v=>v||'').join(' | ')).join('\n'); }
+    function parseMovements(text){ return textToList(text).map(line => { const [movement_type='', employee_id='', employee_name='', from_position_id='', to_position_id='', effective_date='', notes=''] = line.split('|').map(x=>x.trim()); return {movement_type, employee_id, employee_name, from_position_id, to_position_id, effective_date, notes}; }).filter(x=>x.movement_type || x.employee_id || x.notes); }
+
+    window.savePositionForm = async function(event, id){
+      event.preventDefault();
+      if (currentRole !== 'admin') { toast('Mode Admin diperlukan untuk menyimpan perubahan.'); return; }
+      const form = new FormData(event.target);
+      const item = orgData.find(x => x.id === id);
+      if (!item) return;
+      const newParent = form.get('parent_id') || null;
+      const newStatus = form.get('status');
+      const newApprovalStatus = form.get('approval_status');
+      const approvedHeadcount = Number(form.get('approved_headcount'));
+      if (!isValidParentId(newParent)) { toast('Parent position tidak ditemukan.'); return; }
+      if (newParent === id || wouldCreateCycle(id, newParent)) { toast('Parent position tidak valid atau menyebabkan circular reporting.'); return; }
+      if (!POSITION_STATUSES.includes(newStatus) || !APPROVAL_STATUSES.includes(newApprovalStatus)) { toast('Status posisi atau approval tidak valid.'); return; }
+      const updatedItem = {
+        nama_jabatan: form.get('nama_jabatan').trim() || 'Untitled Position',
+        parent_id: newParent,
+        departemen: form.get('departemen').trim() || '-',
+        job_code: form.get('job_code').trim() || '-',
+        grade: form.get('grade').trim() || '-',
+        status: newStatus,
+        location: form.get('location').trim() || '-',
+        cost_center: form.get('cost_center').trim() || '-',
+        approved_headcount: Number.isFinite(approvedHeadcount) && approvedHeadcount > 0 ? approvedHeadcount : 1,
+        effective_date: form.get('effective_date') || today(),
+        updated_at: today(),
+        incumbents: parseIncumbents(form.get('incumbents')),
+        movement_history: parseMovements(form.get('movement_history')),
+        document_control: {
+          document_no: form.get('document_no').trim() || `JD-${id.toUpperCase()}`,
+          revision: form.get('revision').trim() || 'Rev. 00',
+          effective_date: form.get('dc_effective_date') || today(),
+          review_date: form.get('review_date') || '',
+          prepared_by: form.get('prepared_by').trim(),
+          reviewed_by: form.get('reviewed_by').trim(),
+          approved_by: form.get('approved_by').trim(),
+          approval_status: newApprovalStatus,
+          change_notes: form.get('change_notes').trim()
+        },
+        deskripsi_pekerjaan: {
+          ringkasan: form.get('ringkasan').trim(),
+          tugas: textToList(form.get('tugas')),
+          wewenang: textToList(form.get('wewenang')),
+          kualifikasi: textToList(form.get('kualifikasi'))
+        }
+      };
+      const candidate = orgData.map(position => position.id === id ? { ...item, ...updatedItem } : position);
+      const errors = validateStructure(candidate);
+      if (errors.length) { toast(`Perubahan ditolak: ${errors[0]}`); return; }
+      const beforeItem = JSON.parse(JSON.stringify(item));
+      Object.assign(item, updatedItem);
+      const synced = await persistPositionBackend(item, 'update');
+      if (!synced) Object.assign(item, beforeItem);
+      showActionResult(synced ? (backendAvailable && apiToken ? 'Draft berhasil disimpan ke database.' : 'Perubahan berhasil disimpan.') : 'Perubahan tidak tersimpan.', synced);
+      render();
+    };
+
+    function renderAddPositionForm(){
+      if (currentRole !== 'admin') { toast('Mode Admin diperlukan untuk menambah posisi.'); return; }
+      const generatedId = `pos_${Date.now().toString().slice(-6)}`;
+      selectedPositionId = null;
+      $('panelModeBadge').textContent = 'Admin Create';
+      $('panelModeBadge').className = 'mb-2 inline-flex rounded-full bg-teal-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-teal-800';
+      $('panelTitle').textContent = 'Tambah Posisi Baru';
+      $('panelSubtitle').textContent = 'Buat position master baru dan pilih atasan langsung.';
+      $('breadcrumb').innerHTML = '';
+      $('panelContent').innerHTML = `<form id="addPositionForm" class="space-y-5" onsubmit="createPosition(event)">
+        <div class="grid gap-4 sm:grid-cols-2">
+          ${input('Position ID','id',generatedId)}${input('Nama Jabatan','nama_jabatan','')}
+          ${input('Departemen','departemen','')}${input('Job Code','job_code','')}
+          ${input('Grade','grade','')}${input('Location','location','Head Office')}
+          ${input('Cost Center','cost_center','')}${input('Approved Headcount','approved_headcount',1,'number')}
+          ${input('Effective Date','effective_date',today(),'date')}
+          <label class="block"><span class="mb-1 block text-xs font-extrabold uppercase tracking-wide text-slate-500">Status Posisi</span><select name="status" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100">${POSITION_STATUSES.map(s=>`<option value="${s}" ${s === 'draft' ? 'selected' : ''}>${s}</option>`).join('')}</select></label>
+          <label class="block sm:col-span-2"><span class="mb-1 block text-xs font-extrabold uppercase tracking-wide text-slate-500">Atasan Langsung / Parent Position</span><select name="parent_id" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100"><option value="">Tidak ada / Root</option>${orgData.map(x=>`<option value="${escapeHtml(x.id)}">${escapeHtml(x.nama_jabatan)} - ${escapeHtml(x.departemen)}</option>`).join('')}</select></label>
+        </div>
+        ${textarea('Ringkasan Jabatan','ringkasan','',4)}${textarea('Tugas Utama - satu baris per item','tugas','',6)}${textarea('Wewenang - satu baris per item','wewenang','',4)}${textarea('Kualifikasi - satu baris per item','kualifikasi','',4)}
+        <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"><h3 class="text-sm font-extrabold uppercase tracking-[.16em] text-corporate-navy">Document Control</h3><div class="mt-4 grid gap-4 sm:grid-cols-2">
+          ${input('Document No.','document_no','')}${input('Revision','revision','Rev. 00')}
+          ${input('Document Effective Date','dc_effective_date',today(),'date')}${input('Review Date','review_date','', 'date')}
+          ${input('Prepared By','prepared_by','Organization Development')}${input('Reviewed By','reviewed_by','')}${input('Approved By','approved_by','')}
+          <label class="block"><span class="mb-1 block text-xs font-extrabold uppercase tracking-wide text-slate-500">Approval Status</span><select name="approval_status" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-corporate-teal focus:bg-white focus:ring-4 focus:ring-teal-100">${APPROVAL_STATUSES.filter(s=>s !== 'approved').map(s=>`<option value="${s}" ${s === 'draft' ? 'selected' : ''}>${s}</option>`).join('')}</select><p class="mt-1 text-xs text-slate-500">Approved hanya melalui Approval Workflow.</p></label>
+        </div>${textarea('Change Notes','change_notes','Initial draft.',3)}</section>
+        <div class="sticky bottom-0 -mx-4 border-t border-slate-200 bg-white/95 p-4 sm:-mx-6 sm:px-6"><button type="submit" class="w-full rounded-2xl bg-corporate-teal px-5 py-3 text-sm font-extrabold text-white shadow-card hover:bg-teal-800">Buat Posisi</button></div>
+      </form>`;
+      $('modalOverlay').classList.remove('hidden'); $('detailPanel').classList.remove('hidden'); requestAnimationFrame(() => $('detailPanel').classList.remove('translate-x-full'));
+    }
+    window.createPosition = async function(event){
+      event.preventDefault();
+      if (currentRole !== 'admin') { toast('Mode Admin diperlukan untuk menambah posisi.'); return; }
+      const form = new FormData(event.target);
+      const id = String(form.get('id') || '').trim();
+      const parentId = form.get('parent_id') || null;
+      const status = form.get('status');
+      const approvalStatus = form.get('approval_status');
+      const approvedHeadcount = Number(form.get('approved_headcount'));
+      if (!id) { toast('Position ID wajib diisi.'); return; }
+      if (orgData.some(x => x.id === id)) { toast('Position ID sudah digunakan.'); return; }
+      if (!isValidParentId(parentId)) { toast('Parent position tidak ditemukan.'); return; }
+      if (!POSITION_STATUSES.includes(status) || !APPROVAL_STATUSES.includes(approvalStatus)) { toast('Status posisi atau approval tidak valid.'); return; }
+      const item = {
+        id,
+        nama_jabatan: form.get('nama_jabatan').trim() || 'Untitled Position',
+        parent_id: parentId,
+        departemen: form.get('departemen').trim() || '-',
+        job_code: form.get('job_code').trim() || '-',
+        grade: form.get('grade').trim() || '-',
+        status,
+        location: form.get('location').trim() || '-',
+        cost_center: form.get('cost_center').trim() || '-',
+        approved_headcount: Number.isFinite(approvedHeadcount) && approvedHeadcount > 0 ? approvedHeadcount : 1,
+        effective_date: form.get('effective_date') || today(),
+        updated_at: today(),
+        incumbents: [],
+        movement_history: [],
+        document_control: {
+          document_no: form.get('document_no').trim() || `JD-${id.toUpperCase()}`,
+          revision: form.get('revision').trim() || 'Rev. 00',
+          effective_date: form.get('dc_effective_date') || today(),
+          review_date: form.get('review_date') || '',
+          prepared_by: form.get('prepared_by').trim(),
+          reviewed_by: form.get('reviewed_by').trim(),
+          approved_by: form.get('approved_by').trim(),
+          approval_status: approvalStatus,
+          change_notes: form.get('change_notes').trim()
+        },
+        deskripsi_pekerjaan: {
+          ringkasan: form.get('ringkasan').trim(),
+          tugas: textToList(form.get('tugas')),
+          wewenang: textToList(form.get('wewenang')),
+          kualifikasi: textToList(form.get('kualifikasi'))
+        }
+      };
+      const errors = validateStructure([...orgData, item]);
+      if (errors.length) { toast(`Posisi baru ditolak: ${errors[0]}`); return; }
+      orgData.push(item);
+      const synced = await persistPositionBackend(item, 'create');
+      selectedPositionId = id;
+      showActionResult(synced && backendAvailable && apiToken ? 'Posisi baru berhasil dibuat di database.' : 'Posisi baru berhasil dibuat.', synced);
+      render(); openPanel(id);
+    };
+    window.markInactive = async function(id){
+      if (currentRole !== 'admin') { toast('Mode Admin diperlukan untuk mengubah status posisi.'); return; }
+      const item = orgData.find(x => x.id === id);
+      if (!item) return;
+      if (!confirm(`Nonaktifkan posisi ${item.nama_jabatan}?`)) return;
+      item.status = 'inactive'; item.updated_at = today();
+      const synced = await persistPositionStatusBackend(id, 'inactive');
+      showActionResult(synced && backendAvailable && apiToken ? 'Posisi berhasil dinonaktifkan di database.' : 'Posisi dinonaktifkan.', synced);
+      render();
+    };
+
+    // =============================
+    // 7. IMPORT / EXPORT / PRINT
+    // =============================
+    function csvCell(value){
+      const text = String(value ?? '');
+      return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+    }
+    function downloadText(filename, content, type='text/plain'){
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    function rowsToCsv(headers, rows){
+      return [headers.join(','), ...rows.map(row => headers.map(header => csvCell(row[header])).join(','))].join('\n');
+    }
+    async function exportApprovalsCsv(){
+      if (!backendAvailable || !apiToken || currentRole !== 'admin') { toast('Login Admin backend diperlukan untuk export approvals.'); return; }
+      try {
+        setBusy(true, 'Menyiapkan export approvals...');
+        const rows = await apiFetch('/api/approvals');
+        const headers = ['id','entity_type','entity_id','action','status','submitted_by_username','reviewed_by_username','reviewed_at','notes','created_at'];
+        downloadText(`approval-workflows-${today()}.csv`, rowsToCsv(headers, rows), 'text/csv;charset=utf-8');
+        showActionResult('Approval workflow berhasil diexport.');
+      } catch (error) {
+        showActionResult(readableError(error, 'Export approvals gagal.'), false);
+      } finally {
+        setBusy(false);
+      }
+    }
+    async function exportAuditLogCsv(){
+      if (!backendAvailable || !apiToken || currentRole !== 'admin') { toast('Login Admin backend diperlukan untuk export audit log.'); return; }
+      try {
+        setBusy(true, 'Menyiapkan export audit log...');
+        const rows = await apiFetch('/api/audit-logs');
+        const headers = ['id','action','entity_type','entity_id','actor_username','actor_role','ip_address','created_at'];
+        downloadText(`audit-log-${today()}.csv`, rowsToCsv(headers, rows), 'text/csv;charset=utf-8');
+        showActionResult('Audit log berhasil diexport.');
+      } catch (error) {
+        showActionResult(readableError(error, 'Export audit log gagal.'), false);
+      } finally {
+        setBusy(false);
+      }
+    }
+    async function showApprovals(){
+      if (!backendAvailable || !apiToken || currentRole !== 'admin') { toast('Login Admin backend diperlukan untuk melihat approval.'); return; }
+      try {
+        setBusy(true, 'Memuat approval workflow...');
+        const rows = await apiFetch('/api/approvals');
+        selectedPositionId = null;
+        $('panelModeBadge').textContent = 'Admin Backend';
+        $('panelModeBadge').className = 'mb-2 inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-blue-800';
+        $('panelTitle').textContent = 'Approval Workflow';
+        $('panelSubtitle').textContent = `${rows.length} workflow record dari database.`;
+        $('breadcrumb').innerHTML = '';
+        const actions = `<div class="mb-4 flex flex-wrap justify-end gap-2"><button type="button" onclick="exportApprovalsCsv()" class="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-800 hover:bg-blue-100">Export CSV</button></div>`;
+        $('panelContent').innerHTML = actions + (rows.length ? `<div class="space-y-3">${rows.map(row => `<article class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm"><div class="flex flex-wrap items-center gap-2"><b class="text-corporate-navy">${escapeHtml(row.entity_id)}</b><span class="rounded-full bg-white px-2 py-0.5 text-xs font-bold text-slate-600">${escapeHtml(row.status)}</span><span class="text-xs text-slate-500">${escapeHtml(row.created_at)}</span></div><p class="mt-2 text-slate-600">${escapeHtml(row.notes || '-')}</p><p class="mt-1 text-xs text-slate-500">Submitted: ${escapeHtml(row.submitted_by_username || '-')} / Reviewed: ${escapeHtml(row.reviewed_by_username || '-')}</p>${row.status === 'submitted' ? `<div class="mt-3 flex flex-wrap gap-2"><button type="button" onclick="reviewApprovalAction(${row.id}, 'approved')" class="rounded-xl bg-emerald-700 px-3 py-2 text-xs font-extrabold text-white hover:bg-emerald-800">Approve</button><button type="button" onclick="reviewApprovalAction(${row.id}, 'rejected')" class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-700 hover:bg-rose-100">Reject</button></div>` : ''}</article>`).join('')}</div>` : '<p class="text-sm text-slate-500">Belum ada approval workflow.</p>');
+        $('modalOverlay').classList.remove('hidden'); $('detailPanel').classList.remove('hidden'); requestAnimationFrame(() => $('detailPanel').classList.remove('translate-x-full'));
+      } catch (error) { showActionResult(readableError(error, 'Gagal memuat approval.'), false); }
+      finally { setBusy(false); }
+    }
+    window.submitForApproval = async function(id){
+      if (!backendAvailable || !apiToken || currentRole !== 'admin') { toast('Login Admin backend diperlukan untuk submit approval.'); return; }
+      const notes = prompt('Catatan submit approval:', 'Submitted for approval.');
+      if (notes === null) return;
+      try {
+        setBusy(true, 'Submit approval...');
+        const result = await apiFetch(`${apiPositionPath(id)}/submit`, { method: 'POST', body: JSON.stringify({ notes }) });
+        setOrgData(result.positions || orgData);
+        selectedPositionId = id;
+        showActionResult('Draft berhasil disubmit untuk approval.');
+        render();
+      } catch (error) {
+        showActionResult(readableError(error, 'Submit approval gagal.'), false);
+      } finally {
+        setBusy(false);
+      }
+    };
+    window.createDraftRevision = async function(id){
+      if (!backendAvailable || !apiToken || currentRole !== 'admin') { toast('Login Admin backend diperlukan untuk draft revision.'); return; }
+      const notes = prompt('Catatan draft revision:', 'Draft revision untuk perubahan berikutnya.');
+      if (notes === null) return;
+      try {
+        setBusy(true, 'Membuat draft revision...');
+        const result = await apiFetch(`${apiPositionPath(id)}/draft-revision`, { method: 'POST', body: JSON.stringify({ notes }) });
+        setOrgData(result.positions || orgData);
+        selectedPositionId = id;
+        showActionResult('Draft revision berhasil dibuat.');
+        render();
+      } catch (error) {
+        showActionResult(readableError(error, 'Draft revision gagal dibuat.'), false);
+      } finally {
+        setBusy(false);
+      }
+    };
+    window.reviewApprovalAction = async function(id, status){
+      if (!backendAvailable || !apiToken || currentRole !== 'admin') { toast('Login Admin backend diperlukan untuk review approval.'); return; }
+      const notes = prompt(`Catatan ${status}:`, status === 'approved' ? 'Approved.' : 'Rejected for revision.');
+      if (notes === null) return;
+      try {
+        setBusy(true, 'Menyimpan review approval...');
+        const result = await apiFetch('/api/approvals/review', { method: 'POST', body: JSON.stringify({ id, status, notes }) });
+        setOrgData(result.positions || orgData);
+        showActionResult(`Approval berhasil di-${status}.`);
+        await showApprovals();
+      } catch (error) {
+        showActionResult(readableError(error, 'Review approval gagal.'), false);
+      } finally {
+        setBusy(false);
+      }
+    };
+    window.showVersions = async function(id){
+      if (!backendAvailable || !apiToken) { toast('Version history tersedia saat backend aktif.'); return; }
+      try {
+        setBusy(true, 'Memuat version history...');
+        const rows = await apiFetch(`${apiPositionPath(id)}/versions`);
+        selectedPositionId = null;
+        $('panelModeBadge').textContent = 'Version History';
+        $('panelModeBadge').className = 'mb-2 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-slate-700';
+        $('panelTitle').textContent = `Version History: ${id}`;
+        $('panelSubtitle').textContent = `${rows.length} snapshot tersimpan.`;
+        $('breadcrumb').innerHTML = '';
+        const options = rows.map(row => `<option value="${row.version_no}">Version ${escapeHtml(row.version_no)} - ${escapeHtml(row.created_at)}</option>`).join('');
+        const compareBox = rows.length >= 2 ? `<section class="mb-4 rounded-3xl border border-blue-200 bg-blue-50 p-4">
+          <h3 class="text-sm font-extrabold uppercase tracking-[.16em] text-blue-900">Compare Versions</h3>
+          <div class="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+            <label class="block"><span class="mb-1 block text-xs font-bold uppercase tracking-wide text-blue-800">From</span><select id="compareFromVersion" class="w-full rounded-2xl border border-blue-200 bg-white px-4 py-3 text-sm font-semibold outline-none focus:ring-4 focus:ring-blue-100">${options}</select></label>
+            <label class="block"><span class="mb-1 block text-xs font-bold uppercase tracking-wide text-blue-800">To</span><select id="compareToVersion" class="w-full rounded-2xl border border-blue-200 bg-white px-4 py-3 text-sm font-semibold outline-none focus:ring-4 focus:ring-blue-100">${options}</select></label>
+            <button type="button" onclick="compareVersions('${escapeHtml(id)}')" class="self-end rounded-2xl bg-blue-700 px-5 py-3 text-sm font-extrabold text-white hover:bg-blue-800">Compare</button>
+          </div>
+          <div id="versionCompareResult" class="mt-4"></div>
+        </section>` : '';
+        $('panelContent').innerHTML = rows.length ? `${compareBox}<div class="space-y-3">${rows.map(row => `<article class="rounded-2xl border border-slate-200 bg-white p-4 text-sm shadow-sm"><div class="flex flex-wrap items-center gap-2"><b class="text-corporate-navy">Version ${escapeHtml(row.version_no)}</b><span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">${escapeHtml(row.effective_date)}${row.effective_end_date ? ` - ${escapeHtml(row.effective_end_date)}` : ''}</span><span class="text-xs text-slate-500">${escapeHtml(row.created_at)}</span></div><p class="mt-2 font-semibold text-slate-700">${escapeHtml(row.snapshot?.nama_jabatan || '-')}</p><p class="mt-1 text-xs text-slate-500">Created by: ${escapeHtml(row.created_by_username || 'system')} / Revision: ${escapeHtml(row.snapshot?.document_control?.revision || '-')} / Approval: ${escapeHtml(row.snapshot?.document_control?.approval_status || '-')}</p>${currentRole === 'admin' ? `<div class="mt-3"><button type="button" onclick="restoreVersionAsDraft('${escapeHtml(id)}', ${row.version_no})" class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-extrabold text-amber-800 hover:bg-amber-100">Restore as Draft</button></div>` : ''}</article>`).join('')}</div>` : '<p class="text-sm text-slate-500">Belum ada version snapshot.</p>';
+        if (rows.length >= 2) {
+          $('compareFromVersion').value = rows[1].version_no;
+          $('compareToVersion').value = rows[0].version_no;
+        }
+        $('modalOverlay').classList.remove('hidden'); $('detailPanel').classList.remove('hidden'); requestAnimationFrame(() => $('detailPanel').classList.remove('translate-x-full'));
+      } catch (error) {
+        showActionResult(readableError(error, 'Gagal memuat version history.'), false);
+      } finally {
+        setBusy(false);
+      }
+    };
+    window.compareVersions = async function(id){
+      const from = $('compareFromVersion')?.value;
+      const to = $('compareToVersion')?.value;
+      if (!from || !to) { toast('Pilih dua versi untuk dibandingkan.'); return; }
+      if (from === to) { toast('Pilih versi yang berbeda.'); return; }
+      try {
+        setBusy(true, 'Membandingkan version snapshot...');
+        const result = await apiFetch(`${apiPositionPath(id)}/versions/compare?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+        const target = $('versionCompareResult');
+        if (target) target.innerHTML = renderVersionCompare(result);
+        showActionResult(`Compare selesai: ${result.changes.length} perubahan ditemukan.`);
+      } catch (error) {
+        showActionResult(readableError(error, 'Compare version gagal.'), false);
+      } finally {
+        setBusy(false);
+      }
+    };
+    window.restoreVersionAsDraft = async function(id, versionNo){
+      if (currentRole !== 'admin') { toast('Mode Admin diperlukan untuk restore version.'); return; }
+      if (!confirm(`Restore Version ${versionNo} sebagai draft baru?`)) return;
+      const notes = prompt('Catatan restore:', `Restored Version ${versionNo} as draft.`);
+      if (notes === null) return;
+      try {
+        setBusy(true, 'Restore version sebagai draft...');
+        const result = await apiFetch(`${apiPositionPath(id)}/versions/${versionNo}/restore`, { method: 'POST', body: JSON.stringify({ notes }) });
+        setOrgData(result.positions || orgData);
+        selectedPositionId = id;
+        showActionResult('Version berhasil direstore sebagai draft.');
+        render();
+      } catch (error) {
+        showActionResult(readableError(error, 'Restore version gagal.'), false);
+      } finally {
+        setBusy(false);
+      }
+    };
+    function renderVersionCompare(result){
+      if (!result.changes.length) return '<div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-900">Tidak ada perbedaan pada field utama.</div>';
+      return `<div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="flex flex-wrap items-center gap-2 text-sm"><b class="text-corporate-navy">Version ${escapeHtml(result.from.version_no)}</b><span class="text-slate-400">vs</span><b class="text-corporate-navy">Version ${escapeHtml(result.to.version_no)}</b><span class="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-800">${result.changes.length} changes</span></div><div class="mt-4 space-y-3">${result.changes.map(change => `<article class="rounded-2xl border border-slate-200 bg-slate-50 p-3"><p class="text-xs font-extrabold uppercase tracking-wide text-slate-500">${escapeHtml(change.label)}</p><div class="mt-2 grid gap-2 sm:grid-cols-2"><div class="rounded-xl bg-white p-3"><p class="text-[10px] font-bold uppercase text-slate-400">From</p><p class="mt-1 whitespace-pre-wrap text-sm text-slate-700">${formatDiffValue(change.from)}</p></div><div class="rounded-xl bg-white p-3 ring-1 ring-amber-100"><p class="text-[10px] font-bold uppercase text-amber-600">To</p><p class="mt-1 whitespace-pre-wrap text-sm font-semibold text-corporate-navy">${formatDiffValue(change.to)}</p></div></div></article>`).join('')}</div></div>`;
+    }
+    function formatDiffValue(value){
+      if (Array.isArray(value)) return escapeHtml(value.map(item => typeof item === 'object' ? JSON.stringify(item) : item).join('\n') || '-');
+      if (value && typeof value === 'object') return escapeHtml(JSON.stringify(value, null, 2));
+      return escapeHtml(value ?? '-');
+    }
+    async function showAuditLog(){
+      if (!backendAvailable || !apiToken || currentRole !== 'admin') { toast('Login Admin backend diperlukan untuk melihat audit log.'); return; }
+      try {
+        setBusy(true, 'Memuat audit log...');
+        const rows = await apiFetch('/api/audit-logs');
+        selectedPositionId = null;
+        $('panelModeBadge').textContent = 'Admin Backend';
+        $('panelModeBadge').className = 'mb-2 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-slate-700';
+        $('panelTitle').textContent = 'Audit Log';
+        $('panelSubtitle').textContent = `${rows.length} audit record terakhir.`;
+        $('breadcrumb').innerHTML = '';
+        const actions = `<div class="mb-4 flex flex-wrap justify-end gap-2"><button type="button" onclick="exportAuditLogCsv()" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-700 hover:bg-white">Export CSV</button></div>`;
+        $('panelContent').innerHTML = actions + (rows.length ? `<div class="space-y-3">${rows.map(row => `<article class="rounded-2xl border border-slate-200 bg-white p-4 text-sm shadow-sm"><div class="flex flex-wrap items-center gap-2"><b class="text-corporate-navy">${escapeHtml(row.action)}</b><span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">${escapeHtml(row.entity_type)}</span><span class="text-xs text-slate-500">${escapeHtml(row.created_at)}</span></div><p class="mt-2 text-slate-600">Actor: ${escapeHtml(row.actor_username || 'system')} (${escapeHtml(row.actor_role || '-')}) / Entity: ${escapeHtml(row.entity_id || '-')}</p></article>`).join('')}</div>` : '<p class="text-sm text-slate-500">Belum ada audit log.</p>');
+        $('modalOverlay').classList.remove('hidden'); $('detailPanel').classList.remove('hidden'); requestAnimationFrame(() => $('detailPanel').classList.remove('translate-x-full'));
+      } catch (error) { showActionResult(readableError(error, 'Gagal memuat audit log.'), false); }
+      finally { setBusy(false); }
+    }
+    function exportJson(){
+      if (currentRole !== 'admin') { toast('Mode Admin diperlukan untuk export JSON.'); return; }
+      const blob = new Blob([JSON.stringify(orgData, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `org-structure-jd-${today()}.json`; a.click(); URL.revokeObjectURL(url);
+    }
+    function importJson(file){
+      if (currentRole !== 'admin') { toast('Mode Admin diperlukan untuk import JSON.'); return; }
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          if (!Array.isArray(parsed)) { toast('Import ditolak: JSON harus berupa array posisi.'); return; }
+          const missingIdIndex = parsed.findIndex(item => !String(item?.id || '').trim());
+          if (missingIdIndex >= 0) { toast(`Import ditolak: baris ${missingIdIndex + 1} tidak memiliki Position ID.`); return; }
+          const incoming = normalizeData(parsed);
+          if (!incoming.length) { toast('Import ditolak: tidak ada posisi valid.'); return; }
+          const errors = validateStructure(incoming);
+          if (errors.length) { toast(`Import ditolak: ${errors[0]}`); return; }
+          if (!confirm(`Import ${incoming.length} posisi dan replace data lokal?`)) return;
+          setOrgData(incoming); selectedPositionId = null; collapsedNodes.clear(); saveCollapsed();
+          const synced = await persistBackendData('import');
+          showActionResult(synced && backendAvailable && apiToken ? 'Import JSON berhasil disimpan ke database.' : 'Import JSON berhasil.', synced);
+          render();
+        } catch (error) { showActionResult(readableError(error, 'File JSON tidak valid.'), false); }
+      };
+      reader.readAsText(file);
+    }
+    window.printJD = function(id){
+      const item = activeTreeData().find(x => x.id === id); if (!item) return;
+      $('printArea').innerHTML = `<div class="print-page"><div style="border-bottom:3px solid #0F172A;padding-bottom:12px;margin-bottom:18px;"><p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#C89B3C;font-weight:800;">Job Description</p><h1 style="font-size:24px;margin:4px 0;color:#0F172A;">${escapeHtml(item.nama_jabatan)}</h1><p style="font-size:12px;color:#475569;">${escapeHtml(item.departemen)} - ${escapeHtml(item.job_code)} - ${escapeHtml(item.grade)}</p></div>${printMeta(item)}${printSection('Reporting Line', getReportingPath(item.id).map(x=>x.nama_jabatan).join(' > '))}${printSection('Ringkasan Jabatan', item.deskripsi_pekerjaan.ringkasan)}${printList('Tugas Utama', item.deskripsi_pekerjaan.tugas)}${printList('Wewenang', item.deskripsi_pekerjaan.wewenang)}${printList('Kualifikasi', item.deskripsi_pekerjaan.kualifikasi)}${printDocumentControl(item)}</div>`;
+      window.print();
+    };
+    function printMeta(item){ return `<table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-size:12px;"><tr><td style="border:1px solid #CBD5E1;padding:8px;"><b>Position ID</b><br>${escapeHtml(item.id)}</td><td style="border:1px solid #CBD5E1;padding:8px;"><b>Status</b><br>${escapeHtml(item.status)}</td><td style="border:1px solid #CBD5E1;padding:8px;"><b>Location</b><br>${escapeHtml(item.location)}</td><td style="border:1px solid #CBD5E1;padding:8px;"><b>Cost Center</b><br>${escapeHtml(item.cost_center)}</td></tr><tr><td style="border:1px solid #CBD5E1;padding:8px;"><b>Grade</b><br>${escapeHtml(item.grade)}</td><td style="border:1px solid #CBD5E1;padding:8px;"><b>Effective Date</b><br>${escapeHtml(item.effective_date)}</td><td style="border:1px solid #CBD5E1;padding:8px;"><b>Headcount</b><br>${escapeHtml(item.approved_headcount)}</td><td style="border:1px solid #CBD5E1;padding:8px;"><b>Updated At</b><br>${escapeHtml(item.updated_at || '-')}</td></tr></table>`; }
+    function printSection(title, body){ return `<section class="print-section" style="margin-bottom:16px;"><h2 style="font-size:13px;text-transform:uppercase;letter-spacing:1.3px;color:#0F172A;border-bottom:1px solid #CBD5E1;padding-bottom:5px;">${escapeHtml(title)}</h2><p style="font-size:12px;line-height:1.65;color:#111827;white-space:pre-line;">${escapeHtml(body || '-')}</p></section>`; }
+    function printList(title, items){ return `<section class="print-section" style="margin-bottom:16px;"><h2 style="font-size:13px;text-transform:uppercase;letter-spacing:1.3px;color:#0F172A;border-bottom:1px solid #CBD5E1;padding-bottom:5px;">${escapeHtml(title)}</h2><ol style="font-size:12px;line-height:1.65;color:#111827;padding-left:18px;">${(items||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('') || '<li>-</li>'}</ol></section>`; }
+    function printDocumentControl(item){
+      const dc = item.document_control || {};
+      return `<section class="print-section" style="margin-bottom:16px;"><h2 style="font-size:13px;text-transform:uppercase;letter-spacing:1.3px;color:#0F172A;border-bottom:1px solid #CBD5E1;padding-bottom:5px;">Document Control</h2><table style="width:100%;border-collapse:collapse;font-size:12px;line-height:1.5;color:#111827;"><tr><td style="border:1px solid #CBD5E1;padding:7px;"><b>Document No.</b><br>${escapeHtml(dc.document_no || '-')}</td><td style="border:1px solid #CBD5E1;padding:7px;"><b>Revision</b><br>${escapeHtml(dc.revision || '-')}</td><td style="border:1px solid #CBD5E1;padding:7px;"><b>Approval Status</b><br>${escapeHtml(dc.approval_status || '-')}</td></tr><tr><td style="border:1px solid #CBD5E1;padding:7px;"><b>Effective Date</b><br>${escapeHtml(dc.effective_date || '-')}</td><td style="border:1px solid #CBD5E1;padding:7px;"><b>Review Date</b><br>${escapeHtml(dc.review_date || '-')}</td><td style="border:1px solid #CBD5E1;padding:7px;"><b>Prepared By</b><br>${escapeHtml(dc.prepared_by || '-')}</td></tr><tr><td style="border:1px solid #CBD5E1;padding:7px;"><b>Reviewed By</b><br>${escapeHtml(dc.reviewed_by || '-')}</td><td style="border:1px solid #CBD5E1;padding:7px;"><b>Approved By</b><br>${escapeHtml(dc.approved_by || '-')}</td><td style="border:1px solid #CBD5E1;padding:7px;"><b>Change Notes</b><br>${escapeHtml(dc.change_notes || '-')}</td></tr></table></section>`;
+    }
+
+    // =============================
+    // 8. EVENTS
+    // =============================
+    function toast(message){ $('toast').textContent = message; $('toast').classList.remove('hidden'); clearTimeout(window.__toastTimer); window.__toastTimer = setTimeout(()=> $('toast').classList.add('hidden'), 2600); }
+    function switchRole(role){
+      if (backendAvailable && currentUser) { toast('Role dikunci oleh sesi login backend. Logout untuk kembali ke simulasi lokal.'); return; }
+      if (backendAvailable && role === 'admin') { toast('Login Admin backend diperlukan untuk Mode Admin.'); return; }
+      currentRole = role === 'admin' ? 'admin' : 'employee';
+      saveRole();
+      if (currentRole === 'employee' && selectedPositionId === null && !$('detailPanel').classList.contains('hidden')) closePanel();
+      render();
+    }
+    async function resetData(){
+      if (currentRole !== 'admin') { toast('Mode Admin diperlukan untuk reset data.'); return; }
+      if (!confirm('Reset seluruh data lokal ke data demo default?')) return;
+      try {
+        await resetBackendOrLocal();
+        selectedPositionId = null;
+        collapsedNodes.clear();
+        saveCollapsed();
+        showActionResult(backendAvailable && apiToken ? 'Data demo berhasil di-reset di database.' : 'Data demo berhasil di-reset.');
+        render();
+      } catch (error) {
+        showActionResult(readableError(error, 'Reset data gagal.'), false);
+      }
+    }
+    window.toggleCollapse = function(id){ collapsedNodes.has(id) ? collapsedNodes.delete(id) : collapsedNodes.add(id); saveCollapsed(); renderTree(); };
+    $('employeeModeBtn').addEventListener('click', () => switchRole('employee'));
+    $('adminModeBtn').addEventListener('click', () => switchRole('admin'));
+    $('loginForm').addEventListener('submit', loginBackend);
+    $('logoutBtn').addEventListener('click', logoutBackend);
+    $('addPositionBtn').addEventListener('click', renderAddPositionForm);
+    $('closePanelBtn').addEventListener('click', closePanel);
+    $('modalOverlay').addEventListener('click', closePanel);
+    $('searchInput').addEventListener('input', renderTree);
+    $('departmentFilter').addEventListener('change', renderTree);
+    $('statusFilter').addEventListener('change', renderTree);
+    $('asOfDateInput').addEventListener('change', (event) => applyAsOfDate(event.target.value));
+    $('expandAllBtn').addEventListener('click', () => { collapsedNodes.clear(); saveCollapsed(); renderTree(); });
+    $('collapseAllBtn').addEventListener('click', () => { collapsedNodes = new Set(activeTreeData().map(x => x.id)); saveCollapsed(); renderTree(); });
+    $('exportJsonBtn').addEventListener('click', exportJson);
+    $('importJsonInput').addEventListener('change', (e) => { const file = e.target.files?.[0]; if (file) importJson(file); e.target.value = ''; });
+    $('approvalsBtn').addEventListener('click', showApprovals);
+    $('auditLogBtn').addEventListener('click', showAuditLog);
+    $('resetDataBtn').addEventListener('click', resetData);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('detailPanel').classList.contains('hidden')) closePanel(); });
+    render();
+    detectBackend().then(render);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

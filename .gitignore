@@ -1,0 +1,13 @@
+node_modules/
+npm-debug.log*
+
+# Runtime SQLite databases are generated locally by the backend.
+data/*.sqlite
+data/*.sqlite-*
+data/.smoke-test.sqlite*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

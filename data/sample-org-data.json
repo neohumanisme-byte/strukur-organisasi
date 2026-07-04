@@ -1,0 +1,334 @@
+[
+  {
+    "id": "ceo",
+    "nama_jabatan": "President Director",
+    "parent_id": null,
+    "departemen": "Executive Management",
+    "job_code": "EXE-001",
+    "grade": "Director",
+    "status": "active",
+    "location": "Head Office",
+    "cost_center": "EXE",
+    "approved_headcount": 1,
+    "effective_date": "2026-07-04",
+    "updated_at": "2026-07-04",
+    "incumbents": [
+      {
+        "employee_id": "EMP-0001",
+        "employee_name": "Nama Direktur",
+        "assignment_status": "active",
+        "start_date": "2026-01-01"
+      }
+    ],
+    "movement_history": [],
+    "document_control": {
+      "document_no": "JD-EXE-001",
+      "revision": "Rev. 00",
+      "effective_date": "2026-07-04",
+      "review_date": "2027-07-04",
+      "prepared_by": "Organization Development",
+      "reviewed_by": "HR Director",
+      "approved_by": "President Director",
+      "approval_status": "approved",
+      "change_notes": "Initial release."
+    },
+    "deskripsi_pekerjaan": {
+      "ringkasan": "Memimpin arah strategis perusahaan, memastikan pencapaian target bisnis, tata kelola organisasi, dan keberlanjutan operasional.",
+      "tugas": [
+        "Menetapkan strategi jangka pendek dan jangka panjang perusahaan.",
+        "Mengawasi kinerja seluruh fungsi bisnis dan fungsi pendukung.",
+        "Mengambil keputusan strategis terkait investasi, ekspansi, dan prioritas organisasi."
+      ],
+      "wewenang": [
+        "Menyetujui kebijakan strategis perusahaan.",
+        "Menetapkan prioritas organisasi dan alokasi sumber daya utama."
+      ],
+      "kualifikasi": [
+        "Pengalaman kepemimpinan senior minimal 10 tahun.",
+        "Kemampuan strategic thinking, stakeholder management, dan governance yang kuat."
+      ]
+    }
+  },
+  {
+    "id": "hr_director",
+    "nama_jabatan": "HR Director",
+    "parent_id": "ceo",
+    "departemen": "Human Resources",
+    "job_code": "HR-001",
+    "grade": "Director",
+    "status": "active",
+    "location": "Head Office",
+    "cost_center": "HR",
+    "approved_headcount": 1,
+    "effective_date": "2026-07-04",
+    "updated_at": "2026-07-04",
+    "incumbents": [
+      {
+        "employee_id": "EMP-0100",
+        "employee_name": "Nama HR Director",
+        "assignment_status": "active",
+        "start_date": "2026-01-01"
+      }
+    ],
+    "movement_history": [],
+    "document_control": {
+      "document_no": "JD-HR-001",
+      "revision": "Rev. 00",
+      "effective_date": "2026-07-04",
+      "review_date": "2027-07-04",
+      "prepared_by": "Organization Development",
+      "reviewed_by": "President Director",
+      "approved_by": "President Director",
+      "approval_status": "approved",
+      "change_notes": "Initial release."
+    },
+    "deskripsi_pekerjaan": {
+      "ringkasan": "Mengembangkan strategi SDM, organisasi, budaya, talenta, dan kepatuhan ketenagakerjaan untuk mendukung pencapaian bisnis.",
+      "tugas": [
+        "Menyusun strategi HR dan people agenda perusahaan.",
+        "Mengawasi manpower planning, talent management, learning, performance, dan industrial relations.",
+        "Memastikan kepatuhan kebijakan HR terhadap regulasi dan standar perusahaan."
+      ],
+      "wewenang": [
+        "Menyetujui kebijakan dan program HR sesuai kewenangan.",
+        "Memberikan rekomendasi perubahan organisasi dan struktur jabatan."
+      ],
+      "kualifikasi": [
+        "Pengalaman HR leadership minimal 8 tahun.",
+        "Menguasai HR strategy, organization development, labor regulation, dan change management."
+      ]
+    }
+  },
+  {
+    "id": "finance_director",
+    "nama_jabatan": "Finance Director",
+    "parent_id": "ceo",
+    "departemen": "Finance",
+    "job_code": "FIN-001",
+    "grade": "Director",
+    "status": "active",
+    "location": "Head Office",
+    "cost_center": "FIN",
+    "approved_headcount": 1,
+    "effective_date": "2026-07-04",
+    "updated_at": "2026-07-04",
+    "incumbents": [],
+    "movement_history": [],
+    "document_control": {
+      "document_no": "JD-FIN-001",
+      "revision": "Rev. 00",
+      "effective_date": "2026-07-04",
+      "review_date": "2027-07-04",
+      "prepared_by": "Finance",
+      "reviewed_by": "President Director",
+      "approved_by": "President Director",
+      "approval_status": "approved",
+      "change_notes": "Initial release."
+    },
+    "deskripsi_pekerjaan": {
+      "ringkasan": "Memimpin pengelolaan keuangan, kontrol internal, pelaporan, perencanaan anggaran, dan pengendalian risiko keuangan.",
+      "tugas": [
+        "Mengawasi laporan keuangan dan budgeting.",
+        "Mengelola cash flow, cost control, dan compliance finansial.",
+        "Memberikan analisis finansial untuk keputusan bisnis."
+      ],
+      "wewenang": [
+        "Menyetujui proses keuangan sesuai limit kewenangan.",
+        "Menetapkan kontrol internal finansial."
+      ],
+      "kualifikasi": [
+        "Pengalaman finance leadership minimal 8 tahun.",
+        "Menguasai accounting, controlling, tax, dan financial analysis."
+      ]
+    }
+  },
+  {
+    "id": "hr_manager",
+    "nama_jabatan": "HR Manager",
+    "parent_id": "hr_director",
+    "departemen": "Human Resources",
+    "job_code": "HR-002",
+    "grade": "Manager",
+    "status": "active",
+    "location": "Head Office",
+    "cost_center": "HR",
+    "approved_headcount": 1,
+    "effective_date": "2026-07-04",
+    "updated_at": "2026-07-04",
+    "incumbents": [
+      {
+        "employee_id": "EMP-0110",
+        "employee_name": "Nama HR Manager",
+        "assignment_status": "active",
+        "start_date": "2026-03-01"
+      }
+    ],
+    "movement_history": [
+      {
+        "movement_type": "promotion",
+        "employee_id": "EMP-0110",
+        "employee_name": "Nama HR Manager",
+        "from_position_id": "hr_supervisor",
+        "to_position_id": "hr_manager",
+        "effective_date": "2026-03-01",
+        "notes": "Promosi berdasarkan kebutuhan organisasi."
+      }
+    ],
+    "document_control": {
+      "document_no": "JD-HR-002",
+      "revision": "Rev. 01",
+      "effective_date": "2026-07-04",
+      "review_date": "2027-07-04",
+      "prepared_by": "Organization Development",
+      "reviewed_by": "HR Director",
+      "approved_by": "HR Director",
+      "approval_status": "approved",
+      "change_notes": "Penyesuaian scope HR operations dan OD."
+    },
+    "deskripsi_pekerjaan": {
+      "ringkasan": "Mengelola pelaksanaan fungsi HR operasional dan people development agar selaras dengan kebutuhan bisnis.",
+      "tugas": [
+        "Mengelola recruitment, onboarding, training, performance, dan employee relations.",
+        "Menyusun program pengembangan organisasi dan kompetensi.",
+        "Memonitor HR metrics dan memberikan rekomendasi perbaikan."
+      ],
+      "wewenang": [
+        "Memberikan rekomendasi keputusan HR kepada HR Director.",
+        "Mengkoordinasikan pelaksanaan kebijakan HR lintas departemen."
+      ],
+      "kualifikasi": [
+        "Pengalaman HR generalist/OD minimal 5 tahun.",
+        "Mampu menggunakan data HR untuk analisis dan pengambilan keputusan."
+      ]
+    }
+  },
+  {
+    "id": "od_specialist",
+    "nama_jabatan": "Organization Development Specialist",
+    "parent_id": "hr_manager",
+    "departemen": "Human Resources",
+    "job_code": "HR-OD-001",
+    "grade": "Specialist",
+    "status": "active",
+    "location": "Head Office",
+    "cost_center": "HR-OD",
+    "approved_headcount": 1,
+    "effective_date": "2026-07-04",
+    "updated_at": "2026-07-04",
+    "incumbents": [],
+    "movement_history": [],
+    "document_control": {
+      "document_no": "JD-HR-OD-001",
+      "revision": "Rev. 00",
+      "effective_date": "2026-07-04",
+      "review_date": "2027-07-04",
+      "prepared_by": "Organization Development",
+      "reviewed_by": "HR Manager",
+      "approved_by": "HR Director",
+      "approval_status": "draft",
+      "change_notes": "Draft awal posisi OD Specialist."
+    },
+    "deskripsi_pekerjaan": {
+      "ringkasan": "Mendukung desain organisasi, job description, competency framework, talent review, dan inisiatif pengembangan kapabilitas.",
+      "tugas": [
+        "Menganalisis kebutuhan struktur organisasi dan job description.",
+        "Mendukung penyusunan competency framework dan learning roadmap.",
+        "Membuat dashboard dan analisis people development."
+      ],
+      "wewenang": [
+        "Mengusulkan perbaikan proses OD dan people development.",
+        "Mengakses data HR yang relevan sesuai otorisasi."
+      ],
+      "kualifikasi": [
+        "Pengalaman OD/L&D/HR analytics minimal 2 tahun.",
+        "Menguasai Excel, dashboard, analisis organisasi, dan komunikasi bisnis."
+      ]
+    }
+  },
+  {
+    "id": "recruitment_specialist",
+    "nama_jabatan": "Recruitment Specialist",
+    "parent_id": "hr_manager",
+    "departemen": "Human Resources",
+    "job_code": "HR-REC-001",
+    "grade": "Specialist",
+    "status": "active",
+    "location": "Head Office",
+    "cost_center": "HR-REC",
+    "approved_headcount": 1,
+    "effective_date": "2026-07-04",
+    "updated_at": "2026-07-04",
+    "incumbents": [],
+    "movement_history": [],
+    "document_control": {
+      "document_no": "JD-HR-REC-001",
+      "revision": "Rev. 00",
+      "effective_date": "2026-07-04",
+      "review_date": "2027-07-04",
+      "prepared_by": "Talent Acquisition",
+      "reviewed_by": "HR Manager",
+      "approved_by": "HR Director",
+      "approval_status": "approved",
+      "change_notes": "Initial release."
+    },
+    "deskripsi_pekerjaan": {
+      "ringkasan": "Mengelola proses rekrutmen end-to-end untuk memastikan pemenuhan kebutuhan tenaga kerja secara efektif dan tepat waktu.",
+      "tugas": [
+        "Melakukan sourcing, screening, interview coordination, dan offering.",
+        "Mengelola kandidat, hiring manager, dan recruitment dashboard.",
+        "Memastikan proses rekrutmen sesuai SLA dan standar perusahaan."
+      ],
+      "wewenang": [
+        "Memberikan shortlist kandidat kepada hiring manager.",
+        "Mengkoordinasikan proses seleksi dengan stakeholder terkait."
+      ],
+      "kualifikasi": [
+        "Pengalaman talent acquisition minimal 2 tahun.",
+        "Menguasai interview, kandidat pipeline, dan recruitment analytics."
+      ]
+    }
+  },
+  {
+    "id": "finance_controller",
+    "nama_jabatan": "Finance Controller",
+    "parent_id": "finance_director",
+    "departemen": "Finance",
+    "job_code": "FIN-CTRL-001",
+    "grade": "Manager",
+    "status": "active",
+    "location": "Head Office",
+    "cost_center": "FIN-CTRL",
+    "approved_headcount": 1,
+    "effective_date": "2026-07-04",
+    "updated_at": "2026-07-04",
+    "incumbents": [],
+    "movement_history": [],
+    "document_control": {
+      "document_no": "JD-FIN-CTRL-001",
+      "revision": "Rev. 00",
+      "effective_date": "2026-07-04",
+      "review_date": "2027-07-04",
+      "prepared_by": "Finance",
+      "reviewed_by": "Finance Director",
+      "approved_by": "Finance Director",
+      "approval_status": "approved",
+      "change_notes": "Initial release."
+    },
+    "deskripsi_pekerjaan": {
+      "ringkasan": "Mengelola controlling, budget monitoring, cost analysis, dan pelaporan kinerja keuangan perusahaan.",
+      "tugas": [
+        "Menyusun budget dan forecast.",
+        "Melakukan analisis varian biaya dan profitabilitas.",
+        "Menyiapkan laporan manajemen berkala."
+      ],
+      "wewenang": [
+        "Meminta data keuangan dari unit terkait.",
+        "Memberikan rekomendasi kontrol biaya."
+      ],
+      "kualifikasi": [
+        "Pengalaman controlling minimal 4 tahun.",
+        "Menguasai budgeting, forecasting, dan financial analysis."
+      ]
+    }
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "name": "org-jd-structure-codex-v2",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Front-end MVP for organization structure and job description portal.",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node scripts/smoke-test.js",
+    "test:smoke": "node scripts/smoke-test.js"
+  },
+  "keywords": [
+    "organization-structure",
+    "job-description",
+    "tailwind",
+    "vanilla-js",
+    "hr",
+    "od"
+  ],
+  "license": "UNLICENSED"
+}
+

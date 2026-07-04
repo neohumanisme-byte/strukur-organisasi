@@ -479,6 +479,7 @@
     const ROLE_KEY = 'orgStructureJD.v2.role';
     const COLLAPSED_KEY = 'orgStructureJD.v2.collapsed';
     const API_TOKEN_KEY = 'orgStructureJD.v3.apiToken';
+    const API_BASE_URL = localStorage.getItem('orgStructureJD.v3.apiBaseUrl') || 'http://localhost:3000';
     const POSITION_STATUSES = ['active', 'draft', 'inactive', 'obsolete'];
     const APPROVAL_STATUSES = ['draft', 'reviewed', 'approved', 'obsolete'];
     let orgData = loadData();
@@ -587,10 +588,11 @@
     async function apiFetch(path, options = {}){
       const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
       if (apiToken) headers.Authorization = `Bearer ${apiToken}`;
-      const response = await fetch(path, { ...options, headers });
+      const url = path.startsWith('http') ? path : `${API_BASE_URL}${path}`;
+      const response = await fetch(url, { ...options, headers });
       if (response.status === 204) return null;
       const payload = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(payload.error || payload.errors?.[0] || `HTTP ${response.status}`);
+      if (!response.ok) throw new Error(payload.error || payload.message || payload.errors?.[0] || `HTTP ${response.status}`);
       return payload;
     }
     async function detectBackend(){

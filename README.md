@@ -99,6 +99,26 @@ Import dan reset tetap memakai endpoint bulk karena fungsinya memang mengganti d
 
 Governance backend mendukung save draft, submit approval, approve/reject, lock JD yang sudah approved, draft revision untuk perubahan berikutnya, version snapshot, compare antar version, restore version sebagai draft, dan effective-dated organization view.
 
+## Integrasi Express + MariaDB
+
+File `index.html` saat ini diarahkan ke backend Express MariaDB:
+
+```text
+http://localhost:3000/api
+```
+
+Jalankan backend Express di folder `C:\xampp\htdocs\strukur organisasi API`, lalu jalankan frontend ini di port `5173`. Login admin memakai:
+
+```text
+admin / admin12345
+```
+
+Jika URL backend berubah, set di browser console:
+
+```js
+localStorage.setItem('orgStructureJD.v3.apiBaseUrl', 'https://domain-backend-anda')
+```
+
 ## Testing
 
 Run the automated backend smoke test:

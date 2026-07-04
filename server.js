@@ -2,13 +2,15 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const os = require('os');
 const { DatabaseSync } = require('node:sqlite');
 
 const root = __dirname;
 const dataDir = path.join(root, 'data');
+const runtimeDataDir = process.env.VERCEL ? path.join(os.tmpdir(), 'org-jd-structure') : dataDir;
 const dbPath = process.env.ORG_PORTAL_DB_PATH
   ? path.resolve(process.env.ORG_PORTAL_DB_PATH)
-  : path.join(dataDir, 'org-portal.sqlite');
+  : path.join(runtimeDataDir, 'org-portal.sqlite');
 const samplePath = path.join(dataDir, 'sample-org-data.json');
 const port = Number(process.env.PORT) || 5173;
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
